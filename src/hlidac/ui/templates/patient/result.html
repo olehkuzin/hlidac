@@ -1,0 +1,55 @@
+{% extends "patient/layout.html" %}
+{% block title %}{{ screen.heading }}{% endblock %}
+{% block content %}
+{# Audio mode (D59): what the device says on arriving here, from the approved result texts. #}
+{% set say %}{{ screen.heading }}. {% for paragraph in screen.paragraphs %}{{ paragraph }} {% endfor %}{% if urgent and team_line %}{{ chat.care_team_label }}: {{ team_line_display }}. {% endif %}{% if notified %}{{ texts.team_notified }}{% else %}{{ texts.team_not_notified }}{% endif %}{% endset %}
+<div id="audio-result" hidden data-audio-kind="{{ 'urgent' if urgent else 'result' }}" data-audio-say="{{ say | trim }}"></div>
+{% if voice %}{{ c.audio_panel(chat, "/pacient") }}<script src="/static/voice-core.js" defer></script><script src="/static/audio.js" defer></script>{% endif %}
+{% if urgent %}
+<script src="/static/focus-heading.js" defer></script>
+<div class="urgent">
+  {# Focus goes to the heading, so a screen reader starts here (accessibility.md §3, 4.1.3). #}
+  <p class="urgent-flag"><span aria-hidden="true">⚠ </span>Naléhavé</p>
+  <h1 id="result-heading" tabindex="-1" autofocus>{{ screen.heading }}</h1>
+  {% for paragraph in screen.paragraphs %}<p>{{ paragraph }}</p>{% endfor %}
+  {% if team_line or show_emergency_call %}
+  <div class="urgent-calls">
+    {# The team is contacted first; the 155 button appears only on the stricter emergency screen. #}
+    {% if team_line %}
+    <a class="pill pill-urgent pill-wide" href="tel:{{ team_line }}">{{ c.icon('phone') }}<span>{{ chat.care_team_label }}: {{ team_line_display }}</span></a>
+    {% endif %}
+    {% if show_emergency_call %}
+    <a class="pill pill-urgent-outline pill-wide" href="tel:{{ texts.emergency_number }}">{{ c.icon('phone') }}<span>Zavolat {{ texts.emergency_number }}</span></a>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% if team_line_is_demo %}<p class="demo-note">DEMO: telefon týmu je smyšlený, nikam se nedovoláte.</p>{% endif %}
+  <ul class="status-list">
+    <li><span aria-hidden="true">✔ </span>{{ chat.saved }}</li>
+    <li><span aria-hidden="true">{% if notified %}✔{% else %}✖{% endif %} </span>{% if notified %}{{ texts.team_notified }}{% else %}{{ texts.team_not_notified }}{% endif %}</li>
+  </ul>
+  {% if texts.non_voice_route %}
+  <p>{{ texts.non_voice_route }}</p>
+  {% else %}
+  <p class="demo-note">DEMO: cestu pro pacienty, kteří nemohou telefonovat, teprve domlouváme s nemocnicí.</p>
+  {% endif %}
+</div>
+{% else %}
+<div class="msg-group">
+  {% call c.msg(chat) %}
+    <h1 id="result-heading" class="bubble-heading">{{ screen.heading }}</h1>
+    {% for paragraph in screen.paragraphs %}<p>{{ paragraph }}</p>{% endfor %}
+    <p class="status-line"><strong>{% if notified %}{{ texts.team_notified }}{% else %}{{ texts.team_not_notified }}{% endif %}</strong></p>
+  {% endcall %}
+  {% if card %}
+  {% call c.msg(chat, first=False, extra="bubble-card") %}
+    <h2 class="card-title" id="card-heading">Co můžete udělat</h2>
+    <p>{{ card.text_cs }}</p>
+    {% if card.follow_up_cs %}<p>{{ card.follow_up_cs }}</p>{% endif %}
+    <p><a href="{{ card.source_url }}">Zdroj tohoto doporučení</a></p>
+  {% endcall %}
+  {% endif %}
+</div>
+{% endif %}
+<p class="chat-note">{{ texts.not_monitored }}</p>
+{% endblock %}

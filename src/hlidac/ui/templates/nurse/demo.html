@@ -1,0 +1,49 @@
+{% extends "nurse/layout.html" %}
+{% set section = "demo" %}
+{% block title %}Demo panel{% endblock %}
+{% block content %}
+<h1>Demo panel</h1>
+{% if flash %}<p class="flash" role="status"><span aria-hidden="true">✔ </span>{{ flash }}</p>{% endif %}
+{% if on_iris %}
+<p>Jen pro ukázku: v nemocničním provozu tato stránka není. Účty jsou ukázkové; údaje o léčbě (poslední dávka) se čtou ze skutečných nemocničních dat v IRIS, jen pro čtení. Pacienti mají jen pseudonymní označení („Pacient 01“ …), nikdy skutečné jméno.</p>
+{% else %}
+<p>Jen pro ukázku: v nemocničním provozu tato stránka není. Všechny účty i data jsou smyšlené.</p>
+{% endif %}
+
+<h2>Čas ukázky</h2>
+<p>Nyní: <strong>{{ now }}</strong>. Upozornění po termínu převzetí: {{ overdue }}.</p>
+<p>Čas jde jen dopředu. Po posunu se hned zkontrolují termíny: nepřevzaté upozornění po termínu dostane záložní kontakt týmu, v aplikaci i e-mailem.</p>
+<form method="post" action="/demo/cas" class="actions">
+  <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+  {% for key, (delta, words) in steps.items() %}
+  <button type="submit" name="step" value="{{ key }}" class="button button-secondary">Posunout čas {{ words }}</button>
+  {% endfor %}
+</form>
+
+<h2>Pozvat k hlášení</h2>
+{% if patients %}
+<div class="table-wrap" role="region" tabindex="0" aria-label="Pacienti vašeho týmu">
+<table class="data">
+  <caption>Pacienti vašeho týmu</caption>
+  <thead><tr><th scope="col">Pacient</th><th scope="col">Akce</th></tr></thead>
+  <tbody>
+    {% for p in patients %}
+    <tr>
+      <th scope="row">{{ p.display_name }} ({{ p.patient_id }})</th>
+      <td>
+        <form method="post" action="/demo/pozvat">
+          <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+          <input type="hidden" name="patient_id" value="{{ p.patient_id }}">
+          <button type="submit" class="button button-primary">Pozvat k hlášení<span class="visually-hidden"> pacienta {{ p.display_name }}</span></button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}<p>Váš tým nemá žádné pacienty.</p>{% endif %}
+
+<h2>Ukázková schránka</h2>
+<p><a href="{{ mailbox }}">Otevřít ukázkovou e-mailovou schránku</a> (Mailpit, jen na tomto počítači).</p>
+{% endblock %}

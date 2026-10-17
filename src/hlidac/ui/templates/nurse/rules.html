@@ -1,0 +1,48 @@
+{% extends "nurse/layout.html" %}
+{% set section = "rules" %}
+{% block title %}Plány a pravidla{% endblock %}
+{% block content %}
+<h1>Plány a pravidla</h1>
+<p>Obsah, podle kterého systém vyhodnocuje hlášení. Mění se jen schválenou novou verzí souboru; každé vyhodnocení si pamatuje verze, které použilo.</p>
+
+<h2>Dotazníky ({{ plans | length }})</h2>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Dotazníky">
+<table class="data">
+  <caption>Dotazníky (FHIR Questionnaire)</caption>
+  <thead><tr><th scope="col">Název</th><th scope="col">Verze</th><th scope="col">Otázek</th><th scope="col">Schválení</th><th scope="col">Zdroj</th></tr></thead>
+  <tbody>
+    {% for p in plans %}
+    <tr><th scope="row">{{ p.title_cs }}<br><code>{{ p.questionnaire_url }}</code></th><td>{{ p.questionnaire_version }}</td><td>{{ p.items | length }}</td><td>{{ p.approved_by or "DEMO — čeká na schválení FN Motol" }}</td><td>{{ p.source_ref }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<h2>Pravidla {{ rules.content_id }} v{{ rules.version }}</h2>
+<p><strong>Schválení:</strong> {{ rules.approved_by or rules.approval }}. Okno po poslední léčbě: {{ rules.sact_window_days }} dní ({{ rules.sact_window_source }}).</p>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Pravidla">
+<table class="data">
+  <caption>Pravidla (při více zásazích platí nejnaléhavější výsledek)</caption>
+  <thead><tr><th scope="col">Pravidlo</th><th scope="col">Verze</th><th scope="col">Výsledek</th><th scope="col">Důvod pro sestru</th><th scope="col">Zdroj</th></tr></thead>
+  <tbody>
+    {% for r in rules.rules %}
+    <tr><th scope="row">{{ r.rule_id }}</th><td>{{ r.version }}</td><td>{{ outcome[r.outcome] }}{% if r.review_within_hours %} (do {{ r.review_within_hours }} h){% endif %}</td><td>{{ r.reason_cs }}</td><td>{{ r.source_ref }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<h2>Mapování CTCAE {{ mapping.content_id }} v{{ mapping.version }}</h2>
+<p><strong>Schválení:</strong> {{ mapping.approved_by or mapping.approval }}. CTCAE v{{ mapping.ctcae.version }} (doslovné definice NCI), UKONS v{{ mapping.ukons.version }}. Navržený stupeň je vždy předběžný, dokud ho klinik nepotvrdí.</p>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Mapování CTCAE">
+<table class="data">
+  <caption>Mapování odpovědí na stupně CTCAE</caption>
+  <thead><tr><th scope="col">Termín CTCAE</th><th scope="col">MedDRA</th><th scope="col">Otázka</th><th scope="col">Návrhů stupně</th></tr></thead>
+  <tbody>
+    {% for m in mapping.mappings %}
+    <tr><th scope="row">{{ m.ctcae_term }}</th><td>{{ m.meddra_code }}</td><td><code>{{ m.link_id }}</code></td><td>{{ m.proposals | length }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

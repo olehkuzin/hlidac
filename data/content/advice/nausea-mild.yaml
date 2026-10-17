@@ -1,0 +1,56 @@
+# Advice card for mild nausea (WP6), read by src/hlidac/advice.py. No patient data.
+# Written by the team (nobody medically trained) from the public patient leaflets cited below: every
+# sentence of the Czech text restates a recommendation that appears there (see `sources`). Nothing
+# is added from our own knowledge. DEMO — čeká na schválení FN Motol.
+#
+# When it can be shown (advice.select_card): only after a `no_escalation` assessment, when the
+# provisional CTCAE Nausea grade is exactly 1 (in mapping-demo-v1 that means the patient answered
+# "Jím a piju jako obvykle", nausea_intake = intake_usual) and vomiting, diarrhoea and every red-flag
+# item are explicitly denied ("Nevím" or no answer excludes the card).
+approval: "DEMO — čeká na schválení FN Motol"
+sources:
+  - url: https://www.vfn.cz/pp/IP-ONT-025.pdf
+    section: >-
+      Všeobecná fakultní nemocnice v Praze, Oddělení nutričních terapeutů: Informace pro pacienty
+      IP-ONT-025 „Dietní opatření pro onkologicky nemocné pacienty“, verze 2 (schválila Mgr. Lucie
+      Růžičková, 18. 12. 2019), strana 2, kap. 3.2 „Doporučení při nevolnosti, zvracení“
+    supports: >-
+      "Jezte netučná, snadno stravitelná jídla – měkké ovoce, jogurt, tvaroh, …, brambory, rýži";
+      "Nepijte během jídla, počkejte s pitím nejméně půl hodiny."; "Po jídle odpočívejte."
+  - url: https://www.cancer.gov/about-cancer/treatment/side-effects/nausea
+    section: >-
+      National Cancer Institute, "Nausea and Vomiting and Cancer Treatment" (updated May 9, 2025),
+      section "How to prevent and stop nausea and vomiting"; section "Talking with your doctor about
+      nausea and vomiting"
+    supports: >-
+      "Eat smaller meals more frequently throughout the day." (five to six small meals instead of
+      three large ones); "If you are experiencing nausea and vomiting or are worried about having
+      these side effects, tell your health care team."
+  - url: https://www.linkos.cz/files/brozury/80.pdf
+    section: >-
+      MUDr. Marcela Tomíšková (FN Brno): „Předcházení nevolnosti a zvracení po chemoterapii“,
+      MEDIFORUM 2007, hosted on linkos.cz (Česká onkologická společnost), body 6 a 8
+    supports: >-
+      bod 6: "Nezapomínejte stále popíjet po malých doušcích tekutiny."; bod 8: "Pokud se další dny
+      zvracení stupňuje a nic nepomáhá, vyhledejte pomoc lékaře."
+card:
+  card_id: nausea-mild
+  version: "1"
+  text_cs: >-
+    Jezte menší porce a častěji během dne. Vybírejte si netučná a lehká jídla, například jogurt,
+    tvaroh, měkké ovoce, brambory nebo rýži. Během jídla nepijte, s pitím počkejte aspoň půl hodiny.
+    Mezi jídly popíjejte po malých doušcích. Po jídle odpočívejte.
+  easy_read_cs: >-
+    Jezte málo a častěji. Jezte lehká jídla. Pijte mezi jídly, po malých doušcích. Po jídle
+    odpočívejte.
+  follow_up_cs: >-
+    Když se nevolnost nebo zvracení zhoršuje a nic nepomáhá, vyhledejte pomoc lékaře. Řekněte o
+    potížích svému ošetřujícímu týmu.
+  applies_when:
+    - {link_id: nausea, grades: [1]}
+  required_link_ids: [nausea, nausea_intake]
+  # Each of these must be explicitly denied: present, "Nevím" or no answer excludes the card.
+  excluded_if_present: [vomiting, diarrhoea]
+  source_url: https://www.vfn.cz/pp/IP-ONT-025.pdf
+  approved_by: null
+  review_date: null

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{% if error %}Chyba: {% endif %}Přihlášení{% endblock %}
+{% block content %}
+<h1>Přihlášení</h1>
+<p>Pošleme vám e-mail s jednorázovým kódem. Heslo nepotřebujete.</p>
+<form method="post" action="/prihlaseni" novalidate>
+  <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+  <div class="field">
+    <label for="email">Váš e-mail</label>
+    {% if error %}<p id="email-error" class="field-error" role="alert"><span aria-hidden="true">⚠ </span>{{ error }}</p>{% endif %}
+    <input id="email" name="email" type="email" autocomplete="email" spellcheck="false"
+           autocapitalize="off" value="{{ email or '' }}"
+           {% if error %}aria-invalid="true" aria-describedby="email-error" autofocus{% endif %}>
+  </div>
+  <button type="submit" class="button button-primary">Poslat kód</button>
+</form>
+{% endblock %}

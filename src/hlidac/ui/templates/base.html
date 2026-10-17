@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% endblock %} – Hlídač příznaků</title>
+  <link rel="icon" href="/static/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body{% block body_attrs %}{% endblock %}>
+  <a class="skip-link" href="#obsah">Přeskočit na obsah</a>
+  {% block skip_links %}{% endblock %}
+  {% block header %}
+  <header class="site-header">
+    <p class="brand"><img class="logo" src="/static/logo.svg" alt="" width="40" height="40">Hlídač příznaků</p>
+    {% block nav %}{% endblock %}
+    {% if account %}
+    <form method="post" action="/odhlaseni">
+      <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+      <button type="submit" class="button button-secondary">Odhlásit se</button>
+    </form>
+    {% endif %}
+  </header>
+  {% endblock %}
+  <main id="obsah" tabindex="-1">
+    {% block content %}{% endblock %}
+  </main>
+  {% block footer %}
+  <footer class="site-footer">
+    <p>Ukázková verze aplikace (DEMO), Rakathon 2026.</p>
+  </footer>
+  {% endblock %}
+</body>
+</html>

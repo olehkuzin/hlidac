@@ -1,0 +1,136 @@
+# Release pipeline (WP32). Runs ONLY when a tag release-* is pushed: never on branch pushes or PRs.
+#   git tag release-2026-10-17 && git push origin release-2026-10-17
+# Test → backend image to Azure Container Registry → Azure Container Instances (HTTPS via Caddy).
+# One-time setup (service connections, variable group, ACR): README.md, "Releases".
+
+trigger:
+  branches:
+    exclude: ["*"]
+  tags:
+    include: ["release-*"]
+pr: none
+
+variables:
+  - group: rakhaton-release  # Azure DevOps → Library: names and secrets (README.md, "Releases")
+  # Service connections are resolved when the pipeline compiles, so they live here, not in the group.
+  - name: acrServiceConnection
+    value: rakhaton-acr
+  - name: azureServiceConnection
+    value: rakhaton-azure
+  - name: imageRepository
+    value: hlidac-backend
+  - name: imageTag
+    value: $(Build.SourceBranchName)  # the tag itself, e.g. release-2026-10-17
+  - name: proxyImage
+    value: caddy:2.8.4
+
+stages:
+  - stage: Test
+    jobs:
+      - job: test
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: "3.12"
+          - script: pip install uv==0.11.21
+            displayName: Install uv
+          - script: |
+              set -euo pipefail
+              uv sync --frozen
+              uv run ruff check .
+              uv run pytest -q
+            displayName: Lint and tests (IRIS and browser tests skip themselves)
+
+  - stage: Build
+    dependsOn: Test
+    jobs:
+      - job: image
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: Docker@2
+            displayName: Build and push the backend image
+            inputs:
+              command: buildAndPush
+              containerRegistry: ${{ variables.acrServiceConnection }}
+              repository: $(imageRepository)
+              dockerfile: Dockerfile
+              tags: $(imageTag)
+
+  - stage: Deploy
+    dependsOn: Build
+    jobs:
+      - deployment: aci
+        displayName: Azure Container Instances
+        pool:
+          vmImage: ubuntu-latest
+        environment: rakhaton-release  # add an approval check here to gate every release
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                - task: AzureCLI@2
+                  displayName: Deploy the container group
+                  inputs:
+                    azureSubscription: ${{ variables.azureServiceConnection }}
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      set -euo pipefail
+                      # The proxy image comes from our registry: ACI pulls from Docker Hub are rate-limited.
+                      az acr import --name "$ACR_NAME" --source "docker.io/library/$PROXY" \
+                        --image "$PROXY" --force
+                      export ACR_LOGIN_SERVER="$(az acr show -n "$ACR_NAME" --query loginServer -o tsv)"
+                      export ACR_USERNAME="$(az acr credential show -n "$ACR_NAME" --query username -o tsv)"
+                      export ACR_PASSWORD="$(az acr credential show -n "$ACR_NAME" --query 'passwords[0].value' -o tsv)"
+                      echo "##vso[task.setsecret]$ACR_PASSWORD"
+                      export IMAGE="$ACR_LOGIN_SERVER/$(imageRepository):$(imageTag)"
+                      export PROXY_IMAGE="$ACR_LOGIN_SERVER/$PROXY"
+                      spec="$(Agent.TempDirectory)/aci.json"
+                      trap 'rm -f "$spec"' EXIT
+                      python3 deploy/aci_spec.py > "$spec"
+                      az container create --resource-group "$RESOURCE_GROUP" --file "$spec" \
+                        --query "ipAddress.fqdn" -o tsv
+                  env:
+                    PROXY: $(proxyImage)
+                    ACR_NAME: $(ACR_NAME)
+                    RESOURCE_GROUP: $(RESOURCE_GROUP)
+                    ACI_NAME: $(ACI_NAME)
+                    LOCATION: $(LOCATION)
+                    DNS_LABEL: $(DNS_LABEL)
+                    AS_OF: $(AS_OF)
+                    IRIS_HOST: $(IRIS_HOST)
+                    IRIS_PORT: $(IRIS_PORT)
+                    IRIS_NAMESPACE: $(IRIS_NAMESPACE)
+                    IRIS_USER: $(IRIS_USER)
+                    FHIR_BASE_URL: $(FHIR_BASE_URL)
+                    EXTRACTION_BACKEND: $(EXTRACTION_BACKEND)
+                    AZURE_OPENAI_ENDPOINT: $(AZURE_OPENAI_ENDPOINT)
+                    AZURE_OPENAI_DEPLOYMENT: $(AZURE_OPENAI_DEPLOYMENT)
+                    AZURE_OPENAI_API_VERSION: $(AZURE_OPENAI_API_VERSION)
+                    AZURE_OPENAI_REASONING_EFFORT: $(AZURE_OPENAI_REASONING_EFFORT)
+                    LOCAL_BASE_URL: $(LOCAL_BASE_URL)
+                    LOCAL_MODEL: $(LOCAL_MODEL)
+                    SMTP_HOST: $(SMTP_HOST)
+                    SMTP_PORT: $(SMTP_PORT)
+                    SMTP_USER: $(SMTP_USER)
+                    MAIL_FROM: $(MAIL_FROM)
+                    SMTP_ALLOWED_RECIPIENTS: $(SMTP_ALLOWED_RECIPIENTS)
+                    DEMO_PANEL: $(DEMO_PANEL)
+                    DEMO_MAILBOX_URL: $(DEMO_MAILBOX_URL)
+                    CHECKIN_INVITE_MINUTES: $(CHECKIN_INVITE_MINUTES)
+                    CHECKIN_INVITE_TEAM: $(CHECKIN_INVITE_TEAM)
+                    VOICE_BACKEND: $(VOICE_BACKEND)
+                    WHISPER_SERVER_URL: $(WHISPER_SERVER_URL)
+                    WHISPER_SERVER_MODEL: $(WHISPER_SERVER_MODEL)
+                    ELEVENLABS_STT_MODEL: $(ELEVENLABS_STT_MODEL)
+                    # Secret variables reach a script only when mapped here.
+                    SECRET_KEY: $(SECRET_KEY)
+                    IRIS_PASSWORD: $(IRIS_PASSWORD)
+                    AZURE_OPENAI_API_KEY: $(AZURE_OPENAI_API_KEY)
+                    SMTP_PASSWORD: $(SMTP_PASSWORD)
+                    WHISPER_SERVER_API_KEY: $(WHISPER_SERVER_API_KEY)
+                    ELEVENLABS_API_KEY: $(ELEVENLABS_API_KEY)

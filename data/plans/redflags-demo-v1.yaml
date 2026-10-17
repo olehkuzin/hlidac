@@ -1,0 +1,105 @@
+# Red-flag phrases for free-text check-ins (WP22, rewritten D56), checked by src/hlidac/redflags.py.
+# No patient data. Written by the team from public oncology triage guidance; FN Motol agreed that
+# the team writes the demo's clinical content (D51). DEMO — čeká na schválení FN Motol.
+#
+# Two levels (D56):
+# - `urgent`: only the truly critical, life-threatening statements. A hit opens the urgent screen
+#   at once and alerts the nurse; nothing waits for a question (CLAUDE.md principle 6).
+# - `review`: worrying but not by itself critical. A hit makes the report at least a nurse review
+#   (never "no escalation") and the questions decide the rest; e.g. "mám horečku" waits for the
+#   thermometer (D54), whose reading still makes it urgent.
+# A hit can only RAISE urgency (principle 2). Matching ignores case and diacritics ("nemuzu dychat"
+# = "nemůžu dýchat") and starts at a word boundary, so a phrase may be a stem ("dušnost").
+
+content_id: redflags-demo
+version: "2"
+approval: "DEMO — čeká na schválení FN Motol"
+approved_by: null
+
+phrases:
+  # --- urgent: bleeding ---------------------------------------------------------------------
+  - {phrase: "krev ve stolici", level: urgent, source_ref: "UKONS v3 p. 10 row 'Diarrhoea': blood in stool = red; NCI CTCAE v5.0 GI haemorrhage"}
+  - {phrase: "krve ve stolici", level: urgent, source_ref: same as above}
+  - {phrase: "krvavou stolici", level: urgent, source_ref: same as above}
+  - {phrase: "krvavý průjem", level: urgent, source_ref: same as above}
+  - {phrase: "černou stolici", level: urgent, source_ref: "UKONS v3 'Bleeding': melaena (black stool) = red"}
+  - {phrase: "zvracím krev", level: urgent, source_ref: "UKONS v3 'Bleeding': haematemesis = red"}
+  - {phrase: "zvracel krev", level: urgent, source_ref: same as above}
+  - {phrase: "zvracela krev", level: urgent, source_ref: same as above}
+  - {phrase: "vykašlávám krev", level: urgent, source_ref: "UKONS v3 'Bleeding': haemoptysis = red"}
+  - {phrase: "kašlu krev", level: urgent, source_ref: same as above}
+  - {phrase: "krev v moči", level: urgent, source_ref: "UKONS v3 'Bleeding': haematuria on SACT = red"}
+  - {phrase: "silně krvácím", level: urgent, source_ref: "UKONS v3 'Bleeding': uncontrolled bleeding = red"}
+  - {phrase: "krvácení nejde zastavit", level: urgent, source_ref: same as above}
+
+  # --- urgent: breathing and chest ----------------------------------------------------------
+  - {phrase: "nemůžu dýchat", level: urgent, source_ref: "UKONS v3 'Breathlessness': acute or at rest = red"}
+  - {phrase: "nemohu dýchat", level: urgent, source_ref: same as above}
+  - {phrase: "nemůžu se nadechnout", level: urgent, source_ref: same as above}
+  - {phrase: "špatně se mi dýchá", level: review, source_ref: same as above}
+  - {phrase: "špatně dýchá", level: review, source_ref: same as above}
+  - {phrase: "dusím se", level: urgent, source_ref: same as above}
+  - {phrase: "dušnost", level: review, source_ref: same as above}
+  - {phrase: "je mi dušno", level: review, source_ref: same as above}
+  - {phrase: "bolest na hrudi", level: urgent, source_ref: "UKONS v3 'Chest pain' = red (cardiac, PE risk on SACT)"}
+  - {phrase: "bolest na hrudníku", level: urgent, source_ref: same as above}
+  - {phrase: "bolí mě na hrudi", level: urgent, source_ref: same as above}
+  - {phrase: "tlak na hrudi", level: urgent, source_ref: same as above}
+  - {phrase: "tlak na prsou", level: urgent, source_ref: same as above}
+
+  # --- urgent: consciousness, neurology, allergy --------------------------------------------
+  - {phrase: "omdlel", level: urgent, source_ref: "UKONS v3 'Neurological changes / collapse' = red"}
+  - {phrase: "bezvědomí", level: urgent, source_ref: same as above}
+  - {phrase: "ztratil vědomí", level: urgent, source_ref: same as above}
+  - {phrase: "ztratila vědomí", level: urgent, source_ref: same as above}
+  - {phrase: "zmatený", level: review, source_ref: "UKONS v3 'Neurological changes': new confusion = red"}
+  - {phrase: "zmatená", level: review, source_ref: same as above}
+  - {phrase: "zmatenost", level: review, source_ref: same as above}
+  - {phrase: "záchvat křečí", level: urgent, source_ref: "UKONS v3 'Neurological changes': seizure = red"}
+  - {phrase: "epileptický záchvat", level: urgent, source_ref: same as above}
+  - {phrase: "nemůžu mluvit", level: urgent, source_ref: "UKONS v3 'Neurological changes': new weakness or speech loss = red"}
+  - {phrase: "ochrnul", level: urgent, source_ref: same as above}
+  - {phrase: "otok jazyka", level: urgent, source_ref: "UKONS v3 'Allergic reaction': swelling of face, lips or tongue = red"}
+  - {phrase: "oteklý jazyk", level: urgent, source_ref: same as above}
+  - {phrase: "otok obličeje", level: urgent, source_ref: same as above}
+  - {phrase: "otekly mi rty", level: urgent, source_ref: same as above}
+
+  # --- urgent: fluids, urine, rigors --------------------------------------------------------
+  - {phrase: "nemohu pít", level: urgent, source_ref: "VFN IP-ONT-025 §3.2: unable to maintain any hydration = contact at once; UKONS v3 'Oral intake' unable to drink = red"}
+  - {phrase: "nemůžu pít", level: urgent, source_ref: same as above}
+  - {phrase: "nic neudržím", level: urgent, source_ref: same as above}
+  - {phrase: "všechno vyzvracím", level: urgent, source_ref: same as above}
+  - {phrase: "vše vyzvracím", level: urgent, source_ref: same as above}
+  - {phrase: "vůbec nemočím", level: urgent, source_ref: "UKONS v3 'Decreased urine output': none for 12 h = red"}
+  - {phrase: "nemočím", level: review, source_ref: same as above}
+  - {phrase: "třesavk", level: review, source_ref: "UKONS v3 chills row: rigors on SACT = red (sepsis risk)"}
+  - {phrase: "třese mnou zimnice", level: urgent, source_ref: same as above}
+  - {phrase: "nesnesitelná bolest", level: urgent, source_ref: "UKONS v3 'Pain': uncontrolled by usual analgesia = red"}
+
+  # --- urgent: safety -----------------------------------------------------------------------
+  - {phrase: "nechci žít", level: urgent, source_ref: "OUR rule (D56), DEMO: a statement of not wanting to live is always handed to a person at once"}
+  - {phrase: "zabít se", level: urgent, source_ref: same as above}
+
+  # --- review: worrying, the questions decide the rest --------------------------------------
+  - {phrase: "mám horečku", level: review, source_ref: "UKONS v3 p. 10 row 5: fever on SACT is decided by the reading, asked next (D54); a reading of 37.5 °C or more is red"}
+  - {phrase: "vysoká teplota", level: review, source_ref: same as above}
+  - {phrase: "teplota nad", level: review, source_ref: same as above}
+  - {phrase: "zvýšená teplota", level: review, source_ref: same as above}
+  - {phrase: "velmi zle", level: review, source_ref: "UKONS 'fever + overall unwell' pathway: the questions on fever and intake decide; never green"}
+  - {phrase: "mám to horší", level: review, source_ref: "Patient report of worsening (Czech PRO-CTCAE wording); a nurse reviews it"}
+  - {phrase: "je mi hůř", level: review, source_ref: same as above}
+  - {phrase: "zhoršuje se", level: review, source_ref: same as above}
+  - {phrase: "nechci nic pít", level: review, source_ref: "VFN IP-ONT-025 §3.2 poor oral intake; the intake question decides"}
+  - {phrase: "málo piju", level: review, source_ref: same as above}
+  - {phrase: "nemůžu jíst", level: review, source_ref: same as above}
+  - {phrase: "vidím krev", level: review, source_ref: "Unspecified bleeding: the nurse asks where; specific bleeding phrases above are urgent"}
+  - {phrase: "krvácí mi dásně", level: review, source_ref: "UKONS v3 'Bleeding': minor bleeding = amber"}
+  - {phrase: "krvácím z nosu", level: review, source_ref: same as above}
+  - {phrase: "moc mě třese", level: review, source_ref: "UKONS v3 chills row: the chills questions decide; rigors are urgent above"}
+  - {phrase: "třesu se", level: review, source_ref: same as above}
+  - {phrase: "oteklá noha", level: review, source_ref: "UKONS v3 'Limb swelling' (thrombosis risk on SACT) = amber"}
+  - {phrase: "oteklé lýtko", level: review, source_ref: same as above}
+  - {phrase: "silná bolest", level: review, source_ref: "UKONS v3 'Pain': new or worse pain = amber"}
+  - {phrase: "bolí mě břicho", level: review, source_ref: "UKONS v3 'Abdominal pain' = amber"}
+  - {phrase: "žloutenk", level: review, source_ref: "UKONS v3 'Jaundice' new = amber"}
+  - {phrase: "zežloutl", level: review, source_ref: same as above}

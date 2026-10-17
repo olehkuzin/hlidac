@@ -1,0 +1,143 @@
+{% extends "patient/layout.html" %}
+{% block title %}{% if error %}Chyba: {% endif %}Hlášení – rozhovor{% endblock %}
+{# The check-in as a chat (D48), in the messenger frame (D53). The app's side is approved text only
+   (Questionnaire items, the opening prompt, fixed texts); the patient's side is their own words or
+   the approved option they chose. The prompt on screen is the page's h1 (#prompt, focused by
+   chat.js after each reply). #}
+{% block content %}
+<section class="conversation" aria-label="Rozhovor">
+  {{ c.history(log, chat) }}
+
+  {# Audio mode (D59): exactly what the device says for this step, built only from the approved
+     texts on screen plus the fixed audio texts; the options a spoken answer may match exactly;
+     and whether an exact option or number goes in without a read-back (on questions: the closing
+     summary, read aloud in full, confirms every answer before sending, D58). #}
+  {% set a = chat.audio %}
+  {% set spoken_options = (options | map(attribute="text_cs") | list) + (["Nevím"] if item and item.type != "choice" else []) %}
+  {% set say %}
+    {% if error %}{{ error }} {% endif %}
+    {% if prompt.lead %}{{ prompt.lead }} {% elif prompt.retry %}{{ retry }} {% endif %}
+    {% if prompt.kind == "opening" %}{% if history_intro %}{{ history_intro }} {% endif %}{% if topics %}{{ chat.topics_intro }} {{ topics | join(", ") }}. {% endif %}{% if group_topics %}{{ group_topics }} {% endif %}{{ prompt.text }}
+    {% elif prompt.kind == "confirm" %}{{ confirm }} {% if not asked_before %}{{ item.text_cs }} {% endif %}{% if prompt.quote %}{{ chat.your_words }} {{ prompt.quote }}. {% endif %}{{ chat.understood }} {{ prompt.answer_text }}. {{ a.yes_no }}
+    {% elif prompt.kind == "summary" %}{{ prompt.text }} {% for label, answer, link_id in prompt.rows %}{{ label }}: {{ answer }}. {% endfor %}{{ a.send_report }}
+    {% elif item %}{{ item.text_cs }} {% if item.type == "choice" %}{{ a.options }} {{ spoken_options[:-1] | join(", ") }}{% if spoken_options | length > 1 %}, {{ a.or_ }} {% endif %}{{ spoken_options[-1] }}.{% else %}{{ a.say_number }}{% endif %}
+    {% endif %}
+  {% endset %}
+  <div class="msg-group turn" id="tah" data-audio-kind="{{ prompt.kind }}" data-audio-say="{{ say | trim }}"
+       data-audio-options='{{ spoken_options | tojson }}'
+       data-audio-direct="{{ '1' if item and prompt.kind == 'question' else '' }}"
+       data-audio-quantity="{{ '1' if item and item.type == 'quantity' else '' }}">
+    {% set ns = namespace(first=not log or log[-1].event in ("text", "answer", "confirmed")) %}
+    {% if prompt.lead %}
+    {% call c.msg(chat, first=ns.first) %}<p{% if prompt.retry %} class="msg-note"{% endif %}>{{ prompt.lead }}</p>{% endcall %}
+    {% set ns.first = False %}
+    {% elif prompt.retry %}
+    {% call c.msg(chat, first=ns.first) %}<p class="msg-note">{{ retry }}</p>{% endcall %}
+    {% set ns.first = False %}
+    {% endif %}
+    {% if prompt.kind == "opening" %}
+    {% if history_intro %}
+    {% call c.msg(chat, first=ns.first) %}<p>{{ history_intro }}</p>{% endcall %}
+    {% set ns.first = False %}
+    {% endif %}
+    {% if topics %}
+    {% call c.msg(chat, first=ns.first) %}<p>{{ chat.topics_intro }} {{ topics | join(", ") }}.</p>{% endcall %}
+    {% set ns.first = False %}
+    {% endif %}
+    {% if group_topics %}
+    {% call c.msg(chat, first=ns.first) %}<p>{{ group_topics }}</p>{% endcall %}
+    {% set ns.first = False %}
+    {% endif %}
+    {% endif %}
+    {% call c.msg(chat, first=ns.first, extra="msg-current") %}
+      {% if prompt.kind == "confirm" %}
+      <h1 id="prompt" class="bubble-heading" tabindex="-1">{{ confirm }}</h1>
+      {% if not asked_before %}<p>{{ item.text_cs }}</p>{% endif %}
+      {% if prompt.quote %}<p>{{ chat.your_words }} <q class="quote">{{ prompt.quote }}</q></p>{% endif %}
+      <p>{{ chat.understood }} <strong>{{ prompt.answer_text }}</strong></p>
+      {% elif prompt.kind == "summary" %}
+      <h1 id="prompt" class="bubble-heading" tabindex="-1">{{ prompt.text }}</h1>
+      <p>{{ chat.summary_intro }}</p>
+      <dl class="answers summary-list">
+        {% for label, answer, link_id in prompt.rows %}
+        <div class="answer">
+          <dt>{{ label }}</dt>
+          <dd><strong>{{ answer }}</strong>{% if link_id %} <a href="{{ base }}?opravit={{ link_id }}">{{ chat.summary_fix }}<span class="visually-hidden">: {{ label }}</span></a>{% endif %}</dd>
+        </div>
+        {% endfor %}
+      </dl>
+      <p class="bubble-meta">{{ chat.summary_help }}</p>
+      {% elif item %}
+      <h1 id="prompt" class="bubble-heading" tabindex="-1">{{ item.text_cs }}</h1>
+      {% if item.type == "quantity" %}<p class="bubble-meta">Napište číslo{% if unit %} v jednotkách {{ unit }}{% endif %}, například 37,5.</p>{% endif %}
+      {% else %}
+      <h1 id="prompt" class="bubble-heading" tabindex="-1">{{ prompt.text }}</h1>
+      {% if hint %}<p class="bubble-meta">{{ hint }}</p>{% endif %}
+      {% endif %}
+    {% endcall %}
+  </div>
+</section>
+
+<div class="reply-area">
+  {% if voice %}{{ c.audio_panel(chat, base) }}{% endif %}
+  {% if prompt.kind == "question" %}
+  <form method="post" action="{{ base }}/otazka/{{ item.link_id }}">
+    <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+    <input type="hidden" name="chat" value="1">
+    <div class="chips" role="group" aria-labelledby="prompt">
+      {% for option in options %}
+      <button type="submit" name="answer" value="{{ option.code }}" class="chip">{{ option.text_cs }}</button>
+      {% endfor %}
+      {% if item.type != "choice" %}
+      <button type="submit" name="answer" value="{{ dont_know }}" class="chip">Nevím</button>
+      {% endif %}
+    </div>
+  </form>
+  {% elif prompt.kind == "confirm" %}
+  <div class="chips" role="group" aria-labelledby="prompt">
+    <form method="post" action="{{ base }}/potvrdit/{{ item.link_id }}" data-audio="yes">
+      <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+      <input type="hidden" name="chat" value="1">
+      <button type="submit" class="chip chip-primary">Ano, je to správně</button>
+    </form>
+    <a class="chip" href="{{ base }}?opravit={{ item.link_id }}" data-audio="no">Ne, chci to opravit</a>
+  </div>
+  {% elif prompt.kind == "summary" %}
+  <form method="post" action="{{ base }}/odeslat" class="chips" aria-labelledby="prompt" data-audio="send">
+    <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+    <input type="hidden" name="confirm" value="1">
+    <button type="submit" class="chip chip-primary">{{ c.icon('send') }}<span>{{ chat.summary_yes }}</span></button>
+  </form>
+  {% endif %}
+
+  <form method="post" action="{{ base }}/zprava" class="composer" novalidate data-audio="message">
+    <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+    <input type="hidden" name="link_id" value="{{ item.link_id if item and prompt.kind == 'question' else '' }}">
+    {% if voice %}<input type="hidden" name="voice" id="voice-used" value="">{% endif %}
+    <label for="text" class="composer-label">{% if prompt.kind == "opening" %}Vaše zpráva{% elif prompt.kind == "summary" %}{{ chat.summary_add }}{% else %}Nebo odpovězte vlastními slovy{% endif %}</label>
+    {% if error %}<p id="text-error" class="field-error" role="alert"><span aria-hidden="true">⚠ </span>{{ error }}</p>{% endif %}
+    <p class="badge badge-draft" id="voice-badge" hidden>{{ c.icon('mic') }}{{ chat.voice_badge }}</p>
+    <textarea id="text" name="text" rows="{{ 3 if prompt.kind == 'opening' else 1 }}"
+              {% if error %}aria-describedby="text-error" aria-invalid="true"{% endif %}>{{ text or '' }}</textarea>
+    <div class="composer-actions">
+      {% if voice %}{{ c.voice_button(base) }}{% endif %}
+      <button type="submit" class="pill pill-send">{{ c.icon('send') }}<span>Odeslat zprávu</span></button>
+    </div>
+    {% if voice %}
+    <p id="voice-status" class="voice-status" role="status" aria-live="polite"></p>
+    <p class="composer-note">{{ chat.voice_privacy }}</p>
+    {% endif %}
+  </form>
+
+  <details class="chat-other">
+    <summary>Jiné možnosti</summary>
+    <p class="composer-note">Odpovědi se ukládají průběžně, čas nemáte nijak omezený.</p>
+    <p class="chips">
+      <a class="chip" href="{{ base }}/dalsi">Odpovídat na otázky</a>
+      <a class="chip" href="/pacient">Zpět na úvod</a>
+    </p>
+  </details>
+</div>
+<script src="/static/chat.js" defer></script>
+{% if voice %}<script src="/static/voice-core.js" defer></script><script src="/static/voice.js" defer></script><script src="/static/audio.js" defer></script>{% endif %}
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "patient/layout.html" %}
+{% block title %}{% if error %}Chyba: {% endif %}Napsat vlastními slovy{% endblock %}
+{% block page %}
+<form method="post" action="{{ base }}/napsat" novalidate>
+  <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+  {% if voice %}<input type="hidden" name="voice" id="voice-used" value="">{% endif %}
+  <div class="field">
+    {# Opening prompt from architecture/feature-description.md §2. #}
+    <h1><label for="text">Jak se dnes cítíte?</label></h1>
+    <p id="text-hint" class="hint">Popište nám případné potíže a změny v užívání léků.</p>
+    {% if voice %}
+    {# Voice (WP17): shown by voice.js only where the browser can record; without it the page is
+       the plain text form. The transcript lands in the text box below to check and correct. #}
+    <div class="voice" id="voice" hidden data-url="{{ base }}/prepis" data-csrf="{{ csrf_token }}">
+      <button type="button" class="button button-voice" id="voice-toggle">
+        <span class="voice-dot" aria-hidden="true"></span><span id="voice-label">Namluvit</span>
+      </button>
+      <p id="voice-status" class="voice-status" role="status" aria-live="polite"></p>
+    </div>
+    {% endif %}
+    {% if error %}<p id="text-error" class="field-error" role="alert"><span aria-hidden="true">⚠ </span>{{ error }}</p>{% endif %}
+    <textarea id="text" name="text" rows="6"
+              aria-describedby="{% if error %}text-error {% endif %}text-hint"
+              {% if error %}aria-invalid="true" autofocus{% endif %}>{{ text or '' }}</textarea>
+  </div>
+  <button type="submit" class="button button-primary">Pokračovat</button>
+</form>
+<p class="actions"><a class="button button-secondary" href="{{ base }}">Zpět</a></p>
+{% if voice %}<script src="/static/voice-core.js" defer></script><script src="/static/voice.js" defer></script>{% endif %}
+{% endblock %}

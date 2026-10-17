@@ -1,0 +1,9 @@
+# TEST plan sidecar for tests/test_plans.py. Invented; no clinical content, no patient data.
+questionnaire: questionnaire-test.json
+max_clarification_turns: 3
+mapping_ids: [TEST-map-fever]
+rule_ids: []
+advice_card_ids: []
+source_ref: "tests/fixtures (invented, TEST only)"
+approved_by: null
+approval: "TEST — DEMO — čeká na schválení FN Motol"

@@ -1,0 +1,104 @@
+# The demo assessment rules (WP4), read by src/hlidac/assessment.py. Written by the team (nobody
+# medically trained). Every rule is DEMO — čeká na schválení FN Motol. No patient data.
+# The rules only combine the UKONS ratings and CTCAE proposals of data/ctcae/mapping-demo-v1.yaml
+# with the answers; they set workflow urgency, never a diagnosis (CLAUDE.md principle 4).
+content_id: rules-demo
+version: "1"
+approval: "DEMO — čeká na schválení FN Motol"
+approved_by: null
+questionnaire: {url: "urn:hlidac:questionnaire:demo", version: "1"}
+also_questionnaires:  # the illness groups (D50, data/plans/groups-demo-v1.yaml) reuse the core items
+  - {url: "urn:hlidac:questionnaire:group-breast", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-upper-gi", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-digestive", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-liver-pancreas", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-lung", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-prostate", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-testis", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-urological", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-gynaecological", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-uterus", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-ovary", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-haematological", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-leukaemia-myeloma", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-head-neck", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-thyroid", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-brain", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-skin", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-skin-other", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-bone", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-sarcoma", version: "1"}
+mapping: {content_id: ctcae-mapping-demo, version: "1"}
+
+# "5. Fever on SACT" is the default UKONS row. "7. Fever NOT ON SACT" applies only with positive
+# evidence: the last SACT dose is known and older than this, and the record says the patient is
+# not immunocompromised (an unknown value never counts as "not").
+sact_window_days: 56
+sact_window_source: "UKONS 24-Hour Triage Toolkit v3, p. 10, row '5. Fever on SACT': 'Within the last 6-8 weeks of SACT, or immunocompromised' (8 weeks = 56 days)"
+
+# Kinds (assessment.py): ukons_red, ukons_amber, red_flag_present, grade_needs_assessment,
+# free_text_reported, missing_items. A ruleset must hold every kind, so an edited file can't drop a
+# safety rule silently. Outcomes, most urgent first: urgent > routine_review >
+# insufficient_information > no_escalation. Several rules may fire; the most urgent outcome wins.
+# reason_cs is for clinicians and is never shown to the patient.
+rules:
+  - rule_id: ukons-red
+    version: "1"
+    kind: ukons_red
+    outcome: urgent
+    source_ref: "UKONS v3 assessment tool p. 10 (data/ctcae/mapping-demo-v1.yaml, ukons_ratings): a red rating means escalate"
+    reason_cs: "UKONS: {symptom} – červené hodnocení (stupeň {ukons_grade})"
+
+  - rule_id: ukons-two-amber
+    version: "1"
+    kind: ukons_amber
+    min_count: 2
+    outcome: urgent
+    source_ref: "UKONS v3 p. 10: '2 or more amber = escalate to red'"
+    reason_cs: "UKONS: {count} oranžová hodnocení ({items}) – eskalace na červenou"
+
+  - rule_id: ukons-one-amber
+    version: "1"
+    kind: ukons_amber
+    min_count: 1
+    max_count: 1
+    outcome: routine_review
+    review_within_hours: 24
+    source_ref: "UKONS v3 p. 10: '1 Amber = review within 24 hours'"
+    reason_cs: "UKONS: jedno oranžové hodnocení ({items}) – posouzení do {hours} hodin"
+
+  - rule_id: red-flag-present
+    version: "1"
+    kind: red_flag_present
+    outcome: routine_review
+    source_ref: "OUR rule, needs Motol approval: a confirmed red-flag answer is never read as green, even where UKONS has no rating for it (CLAUDE.md principle 2; mapping notes on rows 5 and 7)"
+    reason_cs: "Pacient uvedl varovný příznak ({items}) – posoudí sestra"
+
+  - rule_id: grade-needs-assessment
+    version: "1"
+    kind: grade_needs_assessment
+    outcome: routine_review
+    source_ref: "Spec §6: where a CTCAE criterion is not patient-reportable the system can only propose 'at least grade N, needs clinical assessment'; a clinician reviews it (OUR rule, needs Motol approval)"
+    reason_cs: "Stupeň CTCAE nelze z odpovědí určit přesně ({items}) – potřebuje klinické posouzení"
+
+  - rule_id: free-text-reported
+    version: "1"
+    kind: free_text_reported
+    outcome: routine_review
+    source_ref: "OUR rule, needs Motol approval: the engine cannot grade free text, and free text may only raise urgency (CLAUDE.md principle 2)"
+    reason_cs: "Pacient popsal vlastními slovy další potíže ({items}) – přečte sestra"
+
+  - rule_id: missing-items
+    version: "1"
+    kind: missing_items
+    outcome: insufficient_information
+    source_ref: "Spec §7 'Insufficient information'; system-design §6 step 3. A missing required or red-flag item never ends as no_escalation (CLAUDE.md principle 2)"
+    reason_cs: "Chybí odpověď na povinné nebo varovné položky ({items})"
+
+  - rule_id: group-symptom-reported
+    version: "1"
+    kind: group_symptom_reported
+    outcome: routine_review
+    review_within_hours: 24
+    source_ref: "OUR rule (D50), group approach discussed with FN Motol, DEMO: a 'yes' to an illness-group symptom that CTCAE mapping doesn't grade is never read as green; the nurse reviews it within 24 h (UKONS v3 p. 10 '1 Amber = review within 24 hours'; CLAUDE.md principle 2)"
+    reason_cs: "Pacient uvedl příznak své skupiny onemocnění ({items}) – posoudí sestra"

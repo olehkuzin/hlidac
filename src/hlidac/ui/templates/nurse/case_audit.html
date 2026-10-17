@@ -1,0 +1,77 @@
+{% extends "nurse/layout.html" %}
+{% set section = "case" %}
+{% block title %}Záznam případu {{ patient_label }} ({{ alert.patient_id }}){% endblock %}
+{% block content %}
+<h1>Záznam případu: {{ patient_label }} ({{ alert.patient_id }})</h1>
+<p>Každý krok tohoto hlášení tak, jak je uložený {% if on_iris %}v IRIS (tabulka <code>Hlidac.audit_log</code>, jen připisovaná){% else %}v ukázkovém úložišti v paměti aplikace (bez IRIS; na IRIS je to tabulka <code>Hlidac.audit_log</code>){% endif %}. U volání modelu je přesně to, co model dostal a co vrátil.</p>
+<dl class="facts">
+  <div><dt>Výsledek pravidel</dt><dd>{{ assessment_status[assessment.status] }}, {{ assessment.assessed_at.strftime("%d. %m. %H:%M") }}</dd></div>
+  <div><dt>Verze</dt><dd>dotazník v{{ assessment.questionnaire_version }}, pravidla v{{ assessment.ruleset_version }}, mapování CTCAE v{{ assessment.mapping_version }}, engine v{{ assessment.engine_version }}</dd></div>
+  <div><dt>Přepočet z uložených vstupů</dt><dd><strong class="replay replay-{{ 'same' if replay_same else 'other' }}"><span aria-hidden="true">{{ "✔" if replay_same else "⚠" }} </span>{{ replay_text }}</strong></dd></div>
+</dl>
+
+<h2>Rozhovor s pacientem ({{ history | length }})</h2>
+{% if history %}
+<p>Celý rozhovor v pořadí: každá otázka a kontrola, kterou aplikace ukázala (schválené texty), každá zpráva a odpověď pacienta, odeslání a výsledná obrazovka.</p>
+<div class="table-wrap" role="region" tabindex="0" aria-label="Rozhovor s pacientem">
+<table class="data">
+  <caption>Rozhovor s pacientem, od nejstaršího</caption>
+  <thead><tr><th scope="col">Čas</th><th scope="col">Kdo</th><th scope="col">Krok</th><th scope="col">Text</th></tr></thead>
+  <tbody>
+    {% for h in history %}
+    <tr>
+      <td>{{ h.at.strftime("%d. %m. %H:%M:%S") }}</td>
+      <td>{{ "aplikace" if h.event in app_events else "pacient" }}</td>
+      <th scope="row">{{ chat_event[h.event] }}{% if h.via == "voice" %} (namluveno, přepis zkontroloval pacient){% endif %}</th>
+      <td>{% if h.event == "text" %}<q>{{ h.text }}</q>{% else %}{{ h.text }}{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}<p>U tohoto hlášení se rozhovor neukládal (vzniklo před touto funkcí).</p>{% endif %}
+
+<h2>Průběh ({{ rows | length }})</h2>
+{% if rows %}
+<div class="table-wrap" role="region" tabindex="0" aria-label="Průběh případu">
+<table class="data">
+  <caption>Průběh případu, od nejstaršího</caption>
+  <thead><tr><th scope="col">Čas</th><th scope="col">Kdo</th><th scope="col">Co se stalo</th><th scope="col">Týká se</th><th scope="col">Podrobnosti</th></tr></thead>
+  <tbody>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.entry.at.strftime("%d. %m. %H:%M:%S") }}</td>
+      <td>{{ r.actor }}</td>
+      <th scope="row">{% if r.call_no %}<a href="#volani-{{ r.call_no }}">{{ r.action }} č. {{ r.call_no }}</a>{% else %}{{ r.action }}{% endif %}</th>
+      <td>{{ r.entry.target or "—" }}</td>
+      <td>{{ r.details or "—" }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}<p>K tomuto případu není nic zaznamenáno.</p>{% endif %}
+
+<h2>Co viděl model ({{ calls | length }})</h2>
+{% if calls %}
+<p>Model dostal jen text zprávy po pseudonymizaci a schválené otázky dotazníku: žádné identifikátory, data ani údaje o léčbě. Hlas přepisuje model přímo v aplikaci; v záznamu je jen velikost a otisk nahrávky, zvuk se neukládá. Stupně a naléhavost určují až pravidla.</p>
+{% for r in calls %}
+{% set c = r.entry.model_call %}
+<section class="model-call" id="volani-{{ r.call_no }}" aria-labelledby="volani-{{ r.call_no }}-h">
+  <h3 id="volani-{{ r.call_no }}-h">Volání č. {{ r.call_no }} ({{ purpose.get(c.purpose, c.purpose) }}), {{ r.entry.at.strftime("%d. %m. %H:%M:%S") }}: {{ "v pořádku" if c.ok else "selhalo" }}</h3>
+  <dl class="facts">
+    <div><dt>Účel</dt><dd>{{ purpose.get(c.purpose, c.purpose) }}, data {{ c.data_class }}</dd></div>
+    <div><dt>Kam</dt><dd>{{ c.endpoint_host }} ({{ "lokální model" if c.backend == "local" else "schválené nasazení Azure" if c.backend == "azure" else c.backend }})</dd></div>
+    <div><dt>Model</dt><dd>{{ c.model }}{% if c.model_version %}, verze {{ c.model_version }}{% endif %}</dd></div>
+    <div><dt>Doba</dt><dd>{{ c.duration_ms }} ms</dd></div>
+    {% if c.error %}<div><dt>Chyba</dt><dd><span aria-hidden="true">⚠ </span>{{ c.error }}</dd></div>{% endif %}
+  </dl>
+  <h4>{% if c.purpose == "transcription" %}Odesláno modelu (jen popis nahrávky){% else %}Odesláno modelu (po pseudonymizaci){% endif %}</h4>
+  <pre class="model-text">{{ c.request_text }}</pre>
+  <h4>Odpověď modelu</h4>
+  <pre class="model-text">{{ c.response_text or "—" }}</pre>
+</section>
+{% endfor %}
+{% else %}<p>V tomto případě se model nevolal (odpovědi jen tlačítky).</p>{% endif %}
+<p class="actions"><a class="button button-secondary" href="/sestra/pripad/{{ alert.alert_id }}">Zpět na případ</a></p>
+{% endblock %}

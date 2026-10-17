@@ -1,0 +1,25 @@
+{% extends "patient/layout.html" %}
+{% block title %}Oznámení{% endblock %}
+{% block page %}
+<h1>Oznámení</h1>
+{% set unread = entries | selectattr("unread") | list | length %}
+<p>Nová oznámení: {{ unread }}. Nejnovější jsou nahoře.</p>
+{% if entries %}
+<ul class="notices">
+  {% for e in entries %}
+  <li class="notice{% if e.unread %} notice-unread{% endif %}">
+    <p class="notice-state">{% if e.unread %}<span aria-hidden="true">● </span>Nové{% else %}<span aria-hidden="true">✔ </span>Přečtené{% endif %}</p>
+    <p class="notice-text">{{ e.text }}</p>
+    <p class="hint"><time datetime="{{ e.notification.created_at.isoformat() }}">{{ e.when }}</time></p>
+    <form method="post" action="/pacient/oznameni/{{ e.notification.notification_id }}">
+      <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+      <button type="submit" class="button button-primary">Otevřít<span class="visually-hidden"> oznámení z {{ e.when }}</span></button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Zatím nemáte žádná oznámení.</p>
+{% endif %}
+<p class="actions"><a class="button button-secondary" href="/pacient">Zpět na úvod</a></p>
+{% endblock %}

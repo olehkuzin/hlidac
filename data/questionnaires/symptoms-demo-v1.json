@@ -1,0 +1,589 @@
+{
+  "resourceType": "Questionnaire",
+  "meta": {
+    "tag": [
+      {
+        "system": "urn:hlidac:tag",
+        "code": "hlidac"
+      }
+    ]
+  },
+  "language": "cs",
+  "url": "urn:hlidac:questionnaire:demo",
+  "identifier": [
+    {
+      "system": "urn:hlidac:questionnaire",
+      "value": "demo-v1"
+    }
+  ],
+  "version": "1",
+  "name": "HlidacSymptomsDemo",
+  "title": "Jak se dnes cítíte?",
+  "status": "draft",
+  "experimental": true,
+  "subjectType": [
+    "Patient"
+  ],
+  "date": "2026-10-16",
+  "publisher": "Tým VI-KA (Rakathon 2026)",
+  "description": "DEMO — čeká na schválení FN Motol. Krátký dotazník na nežádoucí účinky protinádorové léčby: horečka, zimnice, celkově zle, nevolnost, zvracení, průjem. Otázky napsal tým (bez lékařského vzdělání) podle CTCAE v5.0 (NCI) a pásem triážního nástroje UKONS v3; nejde o PRO-CTCAE. Zdroje a odůvodnění u každé položky: data/plans/symptoms-demo-v1.plan.yaml a data/ctcae/mapping-demo-v1.yaml.",
+  "purpose": "Demo pro výzvu praha-03 (Digitální hlídač nežádoucích účinků). Odpovědi slouží k předběžnému (nepotvrzenému) stupni CTCAE, který potvrzuje klinik, a k pravidlům pro upozornění týmu.",
+  "item": [
+    {
+      "linkId": "fever",
+      "text": "Objevila se u vás za posledních 24 hodin horečka nebo zvýšená teplota?",
+      "type": "choice",
+      "required": true,
+      "code": [
+        {
+          "system": "urn:hlidac:symptom",
+          "code": "fever",
+          "display": "Horečka"
+        },
+        {
+          "system": "urn:hlidac:ctcae:v5.0",
+          "code": "10016558",
+          "display": "Fever"
+        }
+      ],
+      "extension": [
+        {
+          "url": "urn:hlidac:extension:red-flag",
+          "valueBoolean": true
+        }
+      ],
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "yes",
+            "display": "Ano"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "no",
+            "display": "Ne"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "dont_know",
+            "display": "Nevím"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "temperature",
+      "text": "Jakou teplotu ukázal teploměr naposledy? Počítejte jen měření za posledních 24 hodin.",
+      "type": "quantity",
+      "required": false,
+      "code": [
+        {
+          "system": "urn:hlidac:symptom",
+          "code": "temperature",
+          "display": "Naměřená teplota"
+        }
+      ],
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
+          "valueCoding": {
+            "system": "http://unitsofmeasure.org",
+            "code": "Cel",
+            "display": "°C"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "chills",
+      "text": "Objevila se u vás za posledních 24 hodin zimnice? Zimnice znamená pocit zimy nebo třes zimou.",
+      "type": "choice",
+      "required": true,
+      "code": [
+        {
+          "system": "urn:hlidac:symptom",
+          "code": "chills",
+          "display": "Zimnice"
+        },
+        {
+          "system": "urn:hlidac:ctcae:v5.0",
+          "code": "10008531",
+          "display": "Chills"
+        }
+      ],
+      "extension": [
+        {
+          "url": "urn:hlidac:extension:red-flag",
+          "valueBoolean": true
+        }
+      ],
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "yes",
+            "display": "Ano"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "no",
+            "display": "Ne"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "dont_know",
+            "display": "Nevím"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "chills_severity",
+      "text": "Jak silná je nebo byla zimnice?",
+      "type": "choice",
+      "required": true,
+      "code": [
+        {
+          "system": "urn:hlidac:symptom",
+          "code": "chills-severity",
+          "display": "Síla zimnice"
+        }
+      ],
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "shivering",
+            "display": "Pocit zimy, mírný třes nebo cvakání zubů"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "whole_body",
+            "display": "Třes celého těla"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "dont_know",
+            "display": "Nevím"
+          }
+        }
+      ],
+      "enableWhen": [
+        {
+          "question": "chills",
+          "operator": "=",
+          "answerCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "yes"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "unwell",
+      "text": "Je vám celkově zle?",
+      "type": "choice",
+      "required": true,
+      "code": [
+        {
+          "system": "urn:hlidac:symptom",
+          "code": "generally-unwell",
+          "display": "Celkově zle"
+        }
+      ],
+      "extension": [
+        {
+          "url": "urn:hlidac:extension:red-flag",
+          "valueBoolean": true
+        }
+      ],
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "yes",
+            "display": "Ano"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "no",
+            "display": "Ne"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "dont_know",
+            "display": "Nevím"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "nausea",
+      "text": "Bylo vám za posledních 24 hodin špatně od žaludku nebo na zvracení?",
+      "type": "choice",
+      "required": true,
+      "code": [
+        {
+          "system": "urn:hlidac:symptom",
+          "code": "nausea",
+          "display": "Nevolnost"
+        },
+        {
+          "system": "urn:hlidac:ctcae:v5.0",
+          "code": "10028813",
+          "display": "Nausea"
+        }
+      ],
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "yes",
+            "display": "Ano"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "no",
+            "display": "Ne"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "dont_know",
+            "display": "Nevím"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "nausea_intake",
+      "text": "Kolik dnes jíte a pijete? Když se jídlo a pití liší, vyberte horší možnost.",
+      "type": "choice",
+      "required": true,
+      "code": [
+        {
+          "system": "urn:hlidac:symptom",
+          "code": "oral-intake",
+          "display": "Příjem jídla a pití"
+        }
+      ],
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "intake_usual",
+            "display": "Jím a piju jako obvykle"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "intake_slightly_less",
+            "display": "Jím a piju trochu méně než obvykle"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "intake_decreased",
+            "display": "Jím a piju mnohem méně než obvykle"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "intake_minimal",
+            "display": "Skoro nic nejím ani nepiju"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "dont_know",
+            "display": "Nevím"
+          }
+        }
+      ],
+      "enableWhen": [
+        {
+          "question": "nausea",
+          "operator": "=",
+          "answerCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "yes"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "vomiting",
+      "text": "Objevilo se u vás za posledních 24 hodin zvracení?",
+      "type": "choice",
+      "required": true,
+      "code": [
+        {
+          "system": "urn:hlidac:symptom",
+          "code": "vomiting",
+          "display": "Zvracení"
+        },
+        {
+          "system": "urn:hlidac:ctcae:v5.0",
+          "code": "10047700",
+          "display": "Vomiting"
+        }
+      ],
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "yes",
+            "display": "Ano"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "no",
+            "display": "Ne"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "dont_know",
+            "display": "Nevím"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "vomiting_episodes",
+      "text": "Kolikrát se za posledních 24 hodin objevilo zvracení?",
+      "type": "choice",
+      "required": true,
+      "code": [
+        {
+          "system": "urn:hlidac:symptom",
+          "code": "vomiting-episodes",
+          "display": "Počet zvracení za 24 hodin"
+        }
+      ],
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "episodes_1_2",
+            "display": "Jednou nebo dvakrát"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "episodes_3_5",
+            "display": "3 až 5krát"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "episodes_6_10",
+            "display": "6 až 10krát"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "episodes_over_10",
+            "display": "Víc než 10krát"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "dont_know",
+            "display": "Nevím"
+          }
+        }
+      ],
+      "enableWhen": [
+        {
+          "question": "vomiting",
+          "operator": "=",
+          "answerCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "yes"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "diarrhoea",
+      "text": "Objevil se u vás za posledních 24 hodin průjem? To znamená řidší nebo častější stolice než obvykle.",
+      "type": "choice",
+      "required": true,
+      "code": [
+        {
+          "system": "urn:hlidac:symptom",
+          "code": "diarrhoea",
+          "display": "Průjem"
+        },
+        {
+          "system": "urn:hlidac:ctcae:v5.0",
+          "code": "10012727",
+          "display": "Diarrhea"
+        }
+      ],
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "yes",
+            "display": "Ano"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "no",
+            "display": "Ne"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "dont_know",
+            "display": "Nevím"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "diarrhoea_stools",
+      "text": "Kolikrát za den teď chodíte na stolici navíc oproti době před léčbou? Například dřív jednou denně a teď pětkrát: to jsou 4 navíc.",
+      "type": "choice",
+      "required": true,
+      "code": [
+        {
+          "system": "urn:hlidac:symptom",
+          "code": "stools-over-baseline",
+          "display": "Stolice navíc za den"
+        }
+      ],
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "stools_up_to_3",
+            "display": "0 až 3krát navíc"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "stools_4_6",
+            "display": "4 až 6krát navíc"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "stools_7_9",
+            "display": "7 až 9krát navíc"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "stools_10_plus",
+            "display": "10krát navíc nebo víc"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "dont_know",
+            "display": "Nevím"
+          }
+        }
+      ],
+      "enableWhen": [
+        {
+          "question": "diarrhoea",
+          "operator": "=",
+          "answerCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "yes"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "diarrhoea_blood",
+      "text": "Byla za posledních 24 hodin ve stolici krev nebo hlen?",
+      "type": "choice",
+      "required": true,
+      "code": [
+        {
+          "system": "urn:hlidac:symptom",
+          "code": "stool-blood-mucus",
+          "display": "Krev nebo hlen ve stolici"
+        }
+      ],
+      "extension": [
+        {
+          "url": "urn:hlidac:extension:red-flag",
+          "valueBoolean": true
+        }
+      ],
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "yes",
+            "display": "Ano"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "no",
+            "display": "Ne"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "urn:hlidac:answer",
+            "code": "dont_know",
+            "display": "Nevím"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "other",
+      "text": "Chcete nám ještě něco říct? Popište to vlastními slovy.",
+      "type": "text",
+      "required": false
+    }
+  ]
+}

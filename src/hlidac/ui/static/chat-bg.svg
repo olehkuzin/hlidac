@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Chat background doodles (decorative). Drawn LIGHTER than the page colour behind them, so
+       text over them only gains contrast. Team-drawn. -->
+  <g fill="none" stroke="#f8fafc" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <!-- heart with pulse -->
+    <path d="M30 46s-14-8-14-18a7 7 0 0 1 14-4 7 7 0 0 1 14 4c0 10-14 18-14 18Z"/>
+    <path d="M18 31h6l3-5 4 9 3-5h8"/>
+    <!-- pill -->
+    <rect x="118" y="18" width="34" height="14" rx="7" transform="rotate(-30 135 25)"/>
+    <path d="M131 18l8 14" />
+    <!-- thermometer -->
+    <path d="M76 82V62a5 5 0 0 1 10 0v20a9 9 0 1 1-10 0Z"/>
+    <path d="M81 70v16"/>
+    <!-- plus -->
+    <path d="M168 78v16m-8-8h16"/>
+    <!-- speech bubble -->
+    <path d="M22 112h34a6 6 0 0 1 6 6v16a6 6 0 0 1-6 6H38l-9 8v-8h-7a6 6 0 0 1-6-6v-16a6 6 0 0 1 6-6Z"/>
+    <path d="M27 124h24M27 131h14"/>
+    <!-- drop -->
+    <path d="M128 112s-10 11-10 18a10 10 0 0 0 20 0c0-7-10-18-10-18Z"/>
+    <!-- star / sparkle -->
+    <path d="M100 160v12m-6-6h12"/>
+    <circle cx="176" cy="150" r="4"/>
+    <!-- calendar -->
+    <rect x="150" y="170" width="24" height="20" rx="3"/>
+    <path d="M150 177h24M156 166v6m12-6v6"/>
+    <!-- small plus and dots -->
+    <path d="M52 178v8m-4-4h8"/>
+    <circle cx="96" cy="20" r="2.5"/>
+    <circle cx="190" cy="40" r="2.5"/>
+    <circle cx="12" cy="80" r="2.5"/>
+  </g>
+</svg>

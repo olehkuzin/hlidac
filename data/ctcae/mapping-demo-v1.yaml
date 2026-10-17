@@ -1,0 +1,240 @@
+# Which provisional CTCAE grade (and which UKONS v3 rating) the answers to the demo Questionnaire
+# support. Written by the team (nobody medically trained) for WP2; read by ctcae.py (WP3) and the
+# rules (WP4). Every proposal is PROVISIONAL until a clinician confirms or corrects it (G8).
+#
+# The grade texts are not repeated here: each proposal names (term, grade) in ctcae-v5.0.yaml,
+# where the official text is verbatim. UKONS rows are cited by name, grade and page only (see the
+# licensing note in ukons-v3.yaml); no UKONS wording is reproduced in this file.
+content_id: ctcae-mapping-demo
+version: "1"
+approval: "DEMO — čeká na schválení FN Motol"
+approved_by: null
+questionnaire: {url: "urn:hlidac:questionnaire:demo", version: "1"}
+also_questionnaires:  # the illness groups (D50, data/plans/groups-demo-v1.yaml) reuse the core items
+  - {url: "urn:hlidac:questionnaire:group-breast", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-upper-gi", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-digestive", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-liver-pancreas", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-lung", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-prostate", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-testis", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-urological", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-gynaecological", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-uterus", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-ovary", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-haematological", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-leukaemia-myeloma", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-head-neck", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-thyroid", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-brain", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-skin", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-skin-other", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-bone", version: "1"}
+  - {url: "urn:hlidac:questionnaire:group-sarcoma", version: "1"}
+ctcae: {version: "5.0", file: ctcae-v5.0.yaml}
+ukons: {version: "3", file: ukons-v3.yaml}
+
+reading_rules:
+  - text: "A Semi-colon indicates ‘or’ within the description of the grade."
+    source: "NCI, CTCAE v5.0 (Nov 27, 2017), https://dctd.cancer.gov/research/ctep-trials/for-sites/adverse-events/ctcae-v5-8x11.pdf, p. 2 (sha256 759783e37fdf8d23cc6f801297f5270d8990ef86d5f5c2eec056f1b600bee4ab)"
+  - text: >-
+      OUR rule, needs Motol approval: an answer supports an exact grade only when it meets a
+      patient-reportable criterion of that grade and rules out the patient-reportable criteria of
+      every higher grade. Criteria that are clinical decisions ("… indicated", hospitalization, IV,
+      "Life-threatening consequences", "Death") are never asked or guessed. Otherwise the proposal
+      is "at least N" with needs_clinical_assessment. "Nevím" or a missing follow-up answer gives
+      the lowest grade the symptom itself supports, as "at least"; it never lowers a grade
+      (principle 2).
+    source: "CLAUDE.md principle 2; architecture/feature-description.md §6"
+  - text: >-
+      OUR rule: when several proposals for one term hold, the highest grade wins; between an exact
+      grade and an "at least" grade of the same number, "at least" wins (it asks for clinical
+      assessment). The conditions below are written to be mutually exclusive anyway.
+    source: "CLAUDE.md principle 2"
+
+# Condition vocabulary (WP3 implements exactly this):
+#   answer: {link_id, codes}           the item's finding is present/absent with one of these codes
+#   value: {link_id, unit, gt|ge|lt|le} a typed number (TYPED_VALUE) in that unit, bounds as given.
+#                                      It matches as soon as it is typed, before the patient confirms
+#                                      it (G5, D30): a value can raise urgency at once.
+#   no_value: link_id                  the item has no usable answer: not_mentioned, "Nevím", or not
+#                                      yet confirmed (G5). Used only in conditions that RAISE a grade
+#                                      or a rating, never to close anything.
+#   all: [conditions]                  every condition holds
+mappings:
+  - mapping_id: ctcae-fever
+    ctcae_term: Fever
+    meddra_code: "10016558"
+    link_id: fever
+    proposals:
+      - when: {value: {link_id: temperature, unit: Cel, ge: 38.0, le: 39.0}}
+        grade: 1
+        criterion: {term: Fever, grade: 1}
+      - when: {value: {link_id: temperature, unit: Cel, gt: 39.0, le: 40.0}}
+        grade: 2
+        criterion: {term: Fever, grade: 2}
+      - when: {value: {link_id: temperature, unit: Cel, gt: 40.0}}
+        at_least: 3
+        criterion: {term: Fever, grade: 3}
+        why_at_least: "Grades 3 and 4 differ by duration (<=24 hrs / >24 hrs), which the demo doesn't ask."
+      - when: {all: [{answer: {link_id: fever, codes: ["yes"]}}, {no_value: temperature}]}
+        at_least: 1
+        criterion: {term: Fever, grade: 1}
+        why_at_least: "The patient reports fever but no measured temperature; CTCAE Fever is graded by temperature only."
+    not_graded: >-
+      A measured temperature below 38.0 °C meets no CTCAE Fever grade, so no Fever grade is
+      proposed even if the patient answered "Ano". The UKONS fever rule (below) still applies from
+      37.5 °C, and the nurse sees both answers.
+
+  - mapping_id: ctcae-chills
+    ctcae_term: Chills
+    meddra_code: "10008531"
+    link_id: chills
+    proposals:
+      - when: {answer: {link_id: chills_severity, codes: [shivering]}}
+        at_least: 1
+        criterion: {term: Chills, grade: 1}
+        why_at_least: "Grade 3 includes \"Severe or prolonged\"; the demo doesn't ask how long the chills last."
+      - when: {answer: {link_id: chills_severity, codes: [whole_body]}}
+        at_least: 2
+        criterion: {term: Chills, grade: 2}
+        why_at_least: "Grade 3 (\"Severe or prolonged, not responsive to narcotics\") needs clinical assessment."
+      - when: {all: [{answer: {link_id: chills, codes: ["yes"]}}, {no_value: chills_severity}]}
+        at_least: 1
+        criterion: {term: Chills, grade: 1}
+        why_at_least: "Chills reported without a severity answer."
+
+  - mapping_id: ctcae-nausea
+    ctcae_term: Nausea
+    meddra_code: "10028813"
+    link_id: nausea
+    proposals:
+      - when: {answer: {link_id: nausea_intake, codes: [intake_usual]}}
+        grade: 1
+        criterion: {term: Nausea, grade: 1}
+      - when: {answer: {link_id: nausea_intake, codes: [intake_slightly_less, intake_decreased]}}
+        at_least: 2
+        criterion: {term: Nausea, grade: 2}
+        why_at_least: "Whether a decreased intake is already \"Inadequate\" (grade 3), and the weight loss, dehydration and malnutrition in grade 2's wording, need clinical assessment."
+      - when: {answer: {link_id: nausea_intake, codes: [intake_minimal]}}
+        grade: 3
+        criterion: {term: Nausea, grade: 3}
+        note: "CTCAE v5.0 has no Nausea grade 4 or 5 (\"-\"), so grade 3 is the highest possible."
+      - when: {all: [{answer: {link_id: nausea, codes: ["yes"]}}, {no_value: nausea_intake}]}
+        at_least: 1
+        criterion: {term: Nausea, grade: 1}
+        why_at_least: "Nausea reported without an intake answer."
+
+  - mapping_id: ctcae-vomiting
+    ctcae_term: Vomiting
+    meddra_code: "10047700"
+    link_id: vomiting
+    proposals:
+      - when: {answer: {link_id: vomiting, codes: ["yes"]}}
+        at_least: 1
+        criterion: {term: Vomiting, grade: 1}
+        why_at_least: >-
+          CTCAE v5.0 grades Vomiting by intervention ("Intervention not indicated", "Outpatient IV
+          hydration; …", "Tube feeding, TPN, or hospitalization indicated"), which is a clinical
+          decision. The number of episodes (asked for UKONS) doesn't set a v5.0 grade; the episode
+          counts were CTCAE v4.03 wording.
+
+  - mapping_id: ctcae-diarrhoea
+    ctcae_term: Diarrhea
+    meddra_code: "10012727"
+    link_id: diarrhoea
+    proposals:
+      - when: {answer: {link_id: diarrhoea_stools, codes: [stools_up_to_3]}}
+        at_least: 1
+        criterion: {term: Diarrhea, grade: 1}
+        why_at_least: "Grades 2 and 3 also apply when daily activities are limited (instrumental / self care ADL), which the demo doesn't ask; ostomy output isn't asked either."
+      - when: {answer: {link_id: diarrhoea_stools, codes: [stools_4_6]}}
+        at_least: 2
+        criterion: {term: Diarrhea, grade: 2}
+        why_at_least: "Grade 3 also applies when self care is limited or hospitalization is indicated."
+      - when: {answer: {link_id: diarrhoea_stools, codes: [stools_7_9, stools_10_plus]}}
+        at_least: 3
+        criterion: {term: Diarrhea, grade: 3}
+        why_at_least: "Grade 4 (\"Life-threatening consequences; urgent intervention indicated\") needs clinical assessment."
+      - when: {all: [{answer: {link_id: diarrhoea, codes: ["yes"]}}, {no_value: diarrhoea_stools}]}
+        at_least: 1
+        criterion: {term: Diarrhea, grade: 1}
+        why_at_least: "Diarrhoea reported without a stool count."
+    not_graded: "Blood or mucus in the stool is not a CTCAE v5.0 Diarrhea criterion; it feeds the UKONS rating only."
+
+# `treatment` (WP4): on_sact is the DEFAULT row; off_sact applies only with positive evidence (see
+# `applies_when` of the two fever rows). Rows without `treatment` always apply.
+# UKONS v3 ratings from the answers (for the WP4 rules: red -> urgent; one amber -> review within
+# 24 hours; 2 or more amber -> red; manual pp. 9-10). Rows are cited by name, grade and page.
+ukons_ratings:
+  - ukons_symptom: "12. Nausea"
+    page: 10
+    bands:
+      - {when: {answer: {link_id: nausea_intake, codes: [intake_usual]}}, ukons_grade: 1, rating: green}
+      - {when: {answer: {link_id: nausea_intake, codes: [intake_slightly_less]}}, ukons_grade: 1, rating: green, ours: true}
+      - {when: {answer: {link_id: nausea_intake, codes: [intake_decreased]}}, ukons_grade: 2, rating: amber}
+      - {when: {answer: {link_id: nausea_intake, codes: [intake_minimal]}}, ukons_grade: 3, rating: red}
+    notes: >-
+      OUR note: "a bit less than usual" is read as UKONS grade 1 ("reasonable intake", green); its
+      CTCAE proposal is still "at least 2" (CTCAE grade 2 says "Oral intake decreased"), so the
+      check-in goes to the nurse anyway. Needs Motol's agreement.
+  - ukons_symptom: "13. Vomiting"
+    page: 10
+    bands:
+      - {when: {answer: {link_id: vomiting_episodes, codes: [episodes_1_2]}}, ukons_grade: 1, rating: green}
+      - {when: {answer: {link_id: vomiting_episodes, codes: [episodes_3_5]}}, ukons_grade: 2, rating: amber}
+      - {when: {answer: {link_id: vomiting_episodes, codes: [episodes_6_10]}}, ukons_grade: 3, rating: red}
+      - {when: {answer: {link_id: vomiting_episodes, codes: [episodes_over_10]}}, ukons_grade: 4, rating: red}
+  - ukons_symptom: "14. Diarrhoea"
+    page: 10
+    bands:
+      - {when: {answer: {link_id: diarrhoea_stools, codes: [stools_up_to_3]}}, ukons_grade: 1, rating: amber}
+      - {when: {all: [{answer: {link_id: diarrhoea, codes: ["yes"]}}, {no_value: diarrhoea_stools}]}, ukons_grade: 1, rating: amber, ours: true}
+      - {when: {answer: {link_id: diarrhoea_stools, codes: [stools_4_6]}}, ukons_grade: 2, rating: amber}
+      - {when: {answer: {link_id: diarrhoea_stools, codes: [stools_7_9]}}, ukons_grade: 3, rating: red}
+      - {when: {answer: {link_id: diarrhoea_blood, codes: ["yes"]}}, ukons_grade: 3, rating: red}
+      - {when: {answer: {link_id: diarrhoea_stools, codes: [stools_10_plus]}}, ukons_grade: 4, rating: red}
+    notes: >-
+      OUR notes: UKONS grade 1 for diarrhoea is already amber. Its grade 3 covers 7-9 a day and its
+      grade 4 ">10", so exactly 10 falls in neither; we put 10 into grade 4 (uncertainty never
+      lowers urgency). The "blood or mucus" question covers only part of UKONS grade 3 (it also
+      names incontinence and severe cramping, not asked in v1). The UKONS escalations "persists
+      after taking regimen specific antidiarrhoeal" and "on Immune check point inhibitors -> RED"
+      need the treatment context and belong to the WP4 rules.
+  - ukons_symptom: "5. Fever on SACT"
+    page: 10
+    treatment: on_sact
+    applies_when: >-
+      Within the last 6-8 weeks of SACT, or immunocompromised (treatment context; WP4). OUR rule:
+      this row is the DEFAULT. "7. Fever NOT ON SACT" applies only with positive evidence: the last
+      SACT dose is known and more than 56 days ago, and the patient is not immunocompromised. A
+      missing or unreadable treatment context keeps this row (uncertainty never lowers urgency).
+    bands:
+      - {when: {value: {link_id: temperature, unit: Cel, gt: 37.4}}, rating: red}
+      - {when: {value: {link_id: temperature, unit: Cel, lt: 36.0}}, rating: red}
+      - {when: {answer: {link_id: unwell, codes: ["yes"]}}, rating: red}
+      - {when: {all: [{answer: {link_id: fever, codes: ["yes"]}}, {no_value: temperature}]}, rating: red, ours: true}
+      - {when: {all: [{answer: {link_id: fever, codes: ["yes"]}}, {value: {link_id: temperature, unit: Cel, ge: 36.0, le: 37.4}}]}, rating: amber, ours: true}
+    notes: >-
+      OUR notes (need Motol approval): (1) UKONS green ends at 37.4 and red starts at 37.5, so we
+      use "> 37.4" and a reading such as 37.45 is red. (2) D54 (changed from "a reported fever is
+      red whatever the number"): a patient who reports fever is asked for the thermometer reading
+      next. With no reading ("Nevím", or the report sent without one) the reported fever stays red.
+      With a reading of 36.0-37.4 °C it is amber (a nurse reviews it within 24 hours), never green:
+      the reading may be old, and UKONS itself warns that analgesia or steroids can mask a
+      temperature (its ALERT in this row). (3) UKONS has no "or chills" here (system-design §6 said so;
+      corrected); chills appear in UKONS only as a question under "6. Infection", so the demo proposes no UKONS rating for chills.
+  - ukons_symptom: "7. Fever NOT ON SACT"
+    page: 10
+    treatment: off_sact
+    applies_when: "Not within 6-8 weeks of SACT and not immunocompromised (treatment context; WP4)"
+    bands:
+      - {when: {value: {link_id: temperature, unit: Cel, lt: 36.0}}, ukons_grade: 2, rating: amber}
+      - {when: {value: {link_id: temperature, unit: Cel, gt: 37.4, le: 38.0}}, ukons_grade: 2, rating: amber}
+      - {when: {value: {link_id: temperature, unit: Cel, gt: 38.0, le: 40.0}}, ukons_grade: 3, rating: red}
+      - {when: {value: {link_id: temperature, unit: Cel, gt: 40.0}}, ukons_grade: 4, rating: red}
+    notes: >-
+      OUR note: UKONS grade 0 ends at 37.4 and grade 2 starts at "> 37.5", so everything above 37.4
+      up to 37.5 falls in neither; we put it into amber (uncertainty never lowers urgency). Reported
+      fever or "generally unwell" without a high reading has no band in this row; WP4 must not read
+      that as green (the item stays visible to the nurse).

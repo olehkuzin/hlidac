@@ -1,0 +1,34 @@
+{% extends "patient/layout.html" %}
+{% block title %}Domů{% endblock %}
+{% block content %}
+<div class="msg-group">
+  {% call c.msg(chat) %}
+    <h1 id="turn-heading" class="bubble-heading">Dobrý den</h1>
+    <p>Jste přihlášeni jako {{ account.display_name }}.</p>
+  {% endcall %}
+  {% call c.msg(chat, first=False) %}
+    {% if not has_plan %}
+    <h2 class="card-title">{{ texts.no_plan.heading }}</h2>
+    {% for paragraph in texts.no_plan.paragraphs %}<p>{{ paragraph }}</p>{% endfor %}
+    {% elif open_checkin %}
+    <h2 class="card-title">Rozpracované hlášení</h2>
+    <p>Máte rozpracované hlášení. Vaše odpovědi jsou uložené, můžete pokračovat.</p>
+    {% else %}
+    <h2 class="card-title">Jak se cítíte?</h2>
+    <p>Potíže nám můžete nahlásit kdykoli, i mezi kontrolami.</p>
+    {% endif %}
+  {% endcall %}
+</div>
+<div class="reply-area">
+  {% if has_plan and open_checkin %}
+  <a class="pill pill-send pill-wide" href="/pacient/hlaseni/{{ open_checkin.checkin_id }}">Pokračovat v hlášení</a>
+  {% elif has_plan %}
+  <form method="post" action="/pacient/hlaseni">
+    <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+    <button type="submit" class="pill pill-send pill-wide">Nahlásit, jak se cítím</button>
+  </form>
+  {% endif %}
+  <p class="chips"><a class="chip" href="/pacient/oznameni">Nová oznámení: {{ unread }}</a></p>
+</div>
+<p class="chat-note">{{ texts.not_monitored }}</p>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "patient/layout.html" %}
+{% block title %}{% if error %}Chyba: {% endif %}Otázka {{ position }} ze {{ total }}{% endblock %}
+{% block page %}
+<p class="progress">Otázka {{ position }} ze {{ total }}{% if has_follow_ups %}. Podle odpovědí se mohou přidat další otázky.{% endif %}</p>
+<form method="post" action="{{ base }}/otazka/{{ item.link_id }}" novalidate>
+  <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+  {% if item.type == "choice" %}
+  <fieldset class="question"{% if error %} aria-describedby="answer-error"{% endif %}>
+    <legend><h1>{{ item.text_cs }}</h1></legend>
+    {# Focus moves to the first option, and the fieldset's description reads the error once. #}
+    {% if error %}<p id="answer-error" class="field-error"><span aria-hidden="true">⚠ </span>{{ error }}</p>{% endif %}
+    <div class="options">
+      {% for option in item.options %}
+      <label class="option">
+        <input type="radio" name="answer" value="{{ option.code }}"
+               {% if option.code == chosen %}checked{% endif %}
+               {% if error and loop.first %}autofocus{% endif %}>
+        <span>{{ option.text_cs }}</span>
+      </label>
+      {% endfor %}
+    </div>
+  </fieldset>
+  <button type="submit" class="button button-primary">Pokračovat</button>
+  {% else %}
+  <div class="field">
+    <h1><label for="number">{{ item.text_cs }}</label></h1>
+    <p id="number-hint" class="hint">Napište číslo{% if unit %} v jednotkách {{ unit }}{% endif %}. Pokud nevíte, zvolte Nevím.</p>
+    {% if error %}<p id="number-error" class="field-error" role="alert"><span aria-hidden="true">⚠ </span>{{ error }}</p>{% endif %}
+    <p class="number-row">
+      <input id="number" name="number" type="text" inputmode="decimal" autocomplete="off"
+             class="input-number" value="{{ number }}"
+             aria-describedby="{% if error %}number-error {% endif %}number-hint"
+             {% if error %}aria-invalid="true" autofocus{% endif %}>
+      {% if unit %}<span class="unit" aria-hidden="true">{{ unit }}</span>{% endif %}
+    </p>
+  </div>
+  <div class="button-row">
+    <button type="submit" name="answer" value="{{ typed_value }}" class="button button-primary">Pokračovat</button>
+    <button type="submit" name="answer" value="{{ dont_know }}" class="button button-secondary">Nevím</button>
+  </div>
+  {% endif %}
+</form>
+<p class="actions"><a class="button button-secondary" href="{{ back }}">Zpět</a></p>
+{% endblock %}

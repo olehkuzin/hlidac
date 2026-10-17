@@ -1,0 +1,43 @@
+{% extends "nurse/layout.html" %}
+{% set section = "notifications" %}
+{% block title %}Oznámení{% endblock %}
+{% block content %}
+<h1>Oznámení</h1>
+<p>Nová oznámení: {{ unread }}. Nejnovější jsou nahoře. Odeslaný e-mail neznamená, že se o pacienta někdo postaral.</p>
+{% if entries %}
+<div class="table-wrap" role="region" tabindex="0" aria-label="Oznámení a jejich doručení">
+<table class="data">
+  <caption>Oznámení a jejich doručení</caption>
+  <thead>
+    <tr>
+      <th scope="col">Stav</th>
+      <th scope="col">Oznámení</th>
+      <th scope="col">Čas</th>
+      <th scope="col">V aplikaci</th>
+      <th scope="col">E-mail</th>
+      <th scope="col">Otevřít</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for e in entries %}
+    <tr>
+      <td>{% if e.unread %}<strong><span aria-hidden="true">● </span>Nové</strong>{% else %}<span aria-hidden="true">✔ </span>Přečtené{% endif %}</td>
+      <th scope="row">{{ e.text }}</th>
+      <td><time datetime="{{ e.notification.created_at.isoformat() }}">{{ e.when }}</time></td>
+      <td>{{ e.in_app }}</td>
+      <td>{% if e.email %}{% set icon, word = e.email %}<span aria-hidden="true">{{ icon }} </span>{{ word }}{% else %}bez e-mailu{% endif %}</td>
+      <td>
+        <form method="post" action="/sestra/oznameni/{{ e.notification.notification_id }}">
+          <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+          <button type="submit" class="button button-secondary">Otevřít<span class="visually-hidden"> oznámení z {{ e.when }}</span></button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<p>Žádná oznámení.</p>
+{% endif %}
+{% endblock %}

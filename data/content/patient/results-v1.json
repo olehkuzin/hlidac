@@ -1,0 +1,87 @@
+{
+  "content_id": "patient-results",
+  "version": "1",
+  "approval": "DEMO — čeká na schválení FN Motol",
+  "source_ref": "Team-written workflow notices, no clinical advice: architecture/feature-description.md §7–§8 (statuses; say whether the team was notified; never imply continuous monitoring), architecture/accessibility.md §4 (urgent screen). 155 is the Czech emergency medical service number. The non-voice urgent route is open decision D19. D54: the urgent screen sends the patient to their team's phone line first (patient_line in data/plans/escalation-demo-v1.yaml). In this demo revision the 155 wording is shown only on the stricter emergency variant of the urgent screen.",
+  "not_monitored": "Aplikaci nikdo nesleduje nepřetržitě.",
+  "team_notified": "Váš tým jsme o hlášení informovali.",
+  "team_not_notified": "Váš tým o tomto hlášení zatím neví.",
+  "no_plan": {
+    "heading": "Dotazník zatím není připravený",
+    "paragraphs": [
+      "Váš ošetřující tým vám zatím nepřidělil dotazník.",
+      "Pokud máte potíže, zavolejte svému ošetřujícímu týmu. Když jde o život, volejte 155."
+    ]
+  },
+  "statuses": {
+    "urgent": {
+      "heading": "Zavolejte hned svému týmu",
+      "paragraphs": [
+        "Vaše odpovědi mohou znamenat vážný problém. Nečekejte, až se vám ozveme.",
+        "Zavolejte hned na telefon svého onkologického týmu."
+      ]
+    },
+    "urgent_emergency": {
+      "heading": "Zavolejte hned svému týmu",
+      "paragraphs": [
+        "Vaše odpovědi mohou znamenat vážný problém. Nečekejte, až se vám ozveme.",
+        "Zavolejte hned na telefon svého onkologického týmu.",
+        "Když jde o život nebo máte víc závažných potíží najednou, volejte záchrannou službu na číslo 155."
+      ]
+    },
+    "urgent_no_line": {
+      "heading": "Jednejte hned",
+      "paragraphs": [
+        "Vaše odpovědi mohou znamenat vážný problém. Nečekejte, až se vám ozveme.",
+        "Vaše hlášení jsme hned předali týmu.",
+        "Pokud máte uložené číslo na své onkologické pracoviště, zavolejte tam hned."
+      ]
+    },
+    "urgent_no_line_emergency": {
+      "heading": "Zavolejte hned",
+      "paragraphs": [
+        "Vaše odpovědi mohou znamenat vážný problém. Nečekejte, až se vám ozveme.",
+        "Zavolejte hned záchrannou službu na číslo 155."
+      ]
+    },
+    "routine_review": {
+      "heading": "Hlášení si prohlédne zdravotní sestra",
+      "paragraphs": [
+        "Vaše hlášení jsme uložili. Zdravotní sestra z vašeho týmu si ho prohlédne.",
+        "Pokud se vám přitíží, zavolejte svému ošetřujícímu týmu. Když jde o život, volejte 155."
+      ]
+    },
+    "insufficient_information": {
+      "heading": "Hlášení není úplné",
+      "paragraphs": [
+        "Vaše odpovědi jsme uložili. Na některé otázky nám ale chybí odpověď.",
+        "Zdravotní sestra z vašeho týmu hlášení uvidí mezi neúplnými.",
+        "Pokud se vám přitíží, zavolejte svému ošetřujícímu týmu. Když jde o život, volejte 155."
+      ]
+    },
+    "no_escalation": {
+      "heading": "Děkujeme za hlášení",
+      "paragraphs": [
+        "Vaše hlášení jsme uložili.",
+        "Pokud se vám přitíží, zavolejte svému ošetřujícímu týmu. Když jde o život, volejte 155."
+      ]
+    },
+    "not_assessed": {
+      "heading": "Hlášení jsme uložili",
+      "paragraphs": [
+        "Vaše odpovědi jsme uložili. Zatím je nikdo nevyhodnotil.",
+        "Pokud se vám přitíží, zavolejte svému ošetřujícímu týmu. Když jde o život, volejte 155."
+      ]
+    },
+    "processing_failed": {
+      "heading": "Hlášení se nepodařilo zpracovat",
+      "paragraphs": [
+        "Vaše odpovědi jsme uložili, ale nepodařilo se je vyhodnotit.",
+        "Zdravotní sestra z vašeho týmu hlášení uvidí mezi nevyřízenými.",
+        "Pokud se vám přitíží, zavolejte svému ošetřujícímu týmu. Když jde o život, volejte 155."
+      ]
+    }
+  },
+  "emergency_number": "155",
+  "non_voice_route": null
+}

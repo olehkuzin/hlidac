@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block body_attrs %} class="wide"{% endblock %}
+{% block nav %}
+<nav aria-label="Hlavní">
+  <ul class="nav">
+    <li><a href="/sestra"{% if section == "queue" %} aria-current="page"{% endif %}>Fronta</a></li>
+    <li><a href="/sestra/nevyresene"{% if section == "unresolved" %} aria-current="page"{% endif %}>Nevyřešené</a></li>
+    <li><a href="/sestra/skupiny"{% if section == "groups" %} aria-current="page"{% endif %}>Skupiny</a></li>
+    <li><a href="/sestra/pravidla"{% if section == "rules" %} aria-current="page"{% endif %}>Pravidla</a></li>
+    <li><a href="/sestra/oznameni"{% if section == "notifications" %} aria-current="page"{% endif %}>Oznámení (nová: {{ unread }})</a></li>
+    {% if request.app.state.settings.demo_panel %}<li><a href="/demo"{% if section == "demo" %} aria-current="page"{% endif %}>Demo panel</a></li>{% endif %}
+  </ul>
+</nav>
+{% endblock %}

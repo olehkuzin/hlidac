@@ -1,0 +1,43 @@
+{% extends "nurse/layout.html" %}
+{% set section = "queue" %}
+{% block title %}Pracovní fronta{% endblock %}
+{% macro alert_table(rows, caption) %}
+<div class="table-wrap" role="region" tabindex="0" aria-label="{{ caption }}">
+<table class="data">
+  <caption>{{ caption }}</caption>
+  <thead>
+    <tr>
+      <th scope="col">Priorita</th>
+      <th scope="col">Pacient</th>
+      <th scope="col">Skupina</th>
+      <th scope="col">Předběžný stupeň CTCAE</th>
+      <th scope="col">Důvod (pravidlo)</th>
+      <th scope="col">Převzít do</th>
+      <th scope="col">Případ</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+    {% set icon, word = priority[row.alert.priority] %}
+    <tr>
+      <td><span class="priority priority-{{ row.alert.priority }}"><span aria-hidden="true">{{ icon }} </span>{{ word }}</span></td>
+      <th scope="row">{{ row.patient_label }} ({{ row.alert.patient_id }})</th>
+      <td>{{ row.illness_group }}</td>
+      <td>{{ row.top_grade }}</td>
+      <td>{{ row.reason }}{% if row.grouped %}<br><strong><span aria-hidden="true">+ </span>{{ row.grouped }} další hlášení téže epizody</strong>{% endif %}</td>
+      <td>{{ row.alert.ack_deadline.strftime("%d. %m. %H:%M") }}{% if row.alert.status == "open" and row.alert.ack_deadline <= now %} <strong class="overdue"><span aria-hidden="true">⏰ </span>po termínu</strong>{% endif %}{% if row.alert.fallback_level %} <strong class="overdue"><span aria-hidden="true">⇪ </span>předáno záložnímu kontaktu</strong>{% endif %}</td>
+      <td><a href="/sestra/pripad/{{ row.alert.alert_id }}">Otevřít<span class="visually-hidden"> případ pacienta {{ row.patient_label }} ({{ row.alert.patient_id }})</span></a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endmacro %}
+{% block content %}
+<h1>Pracovní fronta</h1>
+<p>Přihlášeni: {{ account.display_name }}. Stupně CTCAE jsou předběžné, dokud je nepotvrdíte.</p>
+<h2>Nová upozornění ({{ open_rows | length }})</h2>
+{% if open_rows %}{{ alert_table(open_rows, "Nová upozornění, naléhavá nahoře") }}{% else %}<p>Žádná nová upozornění.</p>{% endif %}
+<h2>Převzatá, nevyřešená ({{ acknowledged_rows | length }})</h2>
+{% if acknowledged_rows %}{{ alert_table(acknowledged_rows, "Převzatá upozornění") }}{% else %}<p>Žádná převzatá upozornění.</p>{% endif %}
+{% endblock %}

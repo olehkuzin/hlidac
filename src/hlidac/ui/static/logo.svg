@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <!-- Hlídač příznaků: a heart with a pulse line on the app's blue (#0b4f8a). Team-drawn. -->
+  <rect width="48" height="48" rx="12" fill="#0b4f8a"/>
+  <path d="M24 38.5S9.5 30.2 9.5 19.6A7.6 7.6 0 0 1 24 15.4a7.6 7.6 0 0 1 14.5 4.2C38.5 30.2 24 38.5 24 38.5Z" fill="#ffffff"/>
+  <path d="M10.5 24.5h7.2l2.6-5.4 4.4 10.4 3-6.4 1.8 1.4h8" fill="none" stroke="#0b4f8a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="38.5" cy="12.5" r="5" fill="#ffffff"/>
+  <circle cx="38.5" cy="12.5" r="2.3" fill="#0b4f8a"/>
+</svg>

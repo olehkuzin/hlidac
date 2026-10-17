@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{# Every patient page in the messenger frame (D53): the chat header (logo, the patient's label, the
+   treatment day from the hospital record), the framed window with the wallpaper, a small footer.
+   The chat, home and result pages fill `content` with bubbles; the other pages fill `page`, shown
+   on a plain white panel inside the window. #}
+{% import "patient/_chat.html" as c with context %}
+{% block body_attrs %} class="patient"{% endblock %}
+{% block header %}
+{{ c.icons() }}
+{{ c.header(account, context_line, None if home_page else "/pacient") }}
+{% endblock %}
+{% block content %}<div class="panel">{% block page %}{% endblock %}</div>{% endblock %}
+{% block footer %}
+<footer class="chat-footer"><p>Ukázková verze (DEMO), Rakathon 2026</p></footer>
+{% endblock %}

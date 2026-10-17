@@ -1,0 +1,19 @@
+# Fallback contacts per care team (WP18 part 2), read by src/hlidac/alerts.py. Operational
+# configuration, not clinical content; written by the team. DEMO — čeká na schválení FN Motol.
+# When an alert passes its acknowledgement deadline with nobody having taken it, it goes up one
+# fallback level and these contacts are notified in the app and by email (spec §10: "Coverage hours
+# and fallback contacts are configured in advance"). A fallback contact is a nurse account of the
+# same team (so the case opens for them) and is not notified first: the first notice goes to the
+# team's other nurses. Every address here is invented (dev_seed); no patient data.
+content_id: escalation-demo
+version: "1"
+approval: "DEMO — čeká na schválení FN Motol"
+approved_by: null
+source_ref: "architecture/feature-description.md §10 'Alert ownership and delivery tracking': a configured fallback when acknowledgement is overdue; deadlines in src/hlidac/processing.py"
+# patient_line (D54): the team's phone line, offered first on the patient's urgent screen (155 only
+# when life is at risk). The demo number is INVENTED (it calls nobody); the hospital fills in its
+# real oncology line.
+teams:
+  team-demo:
+    fallback_contacts: ["vedouci@demo.local"]
+    patient_line: "+420000000000"

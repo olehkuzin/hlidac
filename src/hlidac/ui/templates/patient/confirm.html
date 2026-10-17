@@ -1,0 +1,16 @@
+{% extends "patient/layout.html" %}
+{% block title %}Je to správně? {{ item.text_cs }}{% endblock %}
+{% block page %}
+<p class="progress">Otázka {{ position }} ze {{ total }}</p>
+<h1>Je to správně?</h1>
+<p>Otázka: {{ item.text_cs }}</p>
+{% if quote %}<p>Napsali jste: <q class="written">{{ quote }}</q></p>
+{% endif %}<p class="answer-echo">Rozuměli jsme: <strong>{{ answer_text }}</strong></p>
+<div class="button-row">
+  <form method="post" action="{{ base }}/potvrdit/{{ item.link_id }}">
+    <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+    <button type="submit" class="button button-primary">Ano, je to správně</button>
+  </form>
+  <a class="button button-secondary" href="{{ base }}/otazka/{{ item.link_id }}">Ne, chci to opravit</a>
+</div>
+{% endblock %}

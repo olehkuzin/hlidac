@@ -1,0 +1,154 @@
+{% extends "nurse/layout.html" %}
+{% set section = "case" %}
+{% block title %}{% if errors %}Chyba: {% endif %}Případ {{ patient_label }} ({{ alert.patient_id }}){% endblock %}
+{% block content %}
+{% set icon, word = priority[alert.priority] %}
+<h1>Případ: {{ patient_label }} ({{ alert.patient_id }})</h1>
+{% if flash %}<p class="flash" role="status"><span aria-hidden="true">✔ </span>{{ flash }}</p>{% endif %}
+<dl class="facts">
+  <div><dt>Skupina onemocnění</dt><dd>{{ illness_group }}</dd></div>
+  <div><dt>Priorita</dt><dd><span class="priority priority-{{ alert.priority }}"><span aria-hidden="true">{{ icon }} </span>{{ word }}</span></dd></div>
+  <div><dt>Stav upozornění</dt><dd>{{ alert_status[alert.status] }}{% if alert.acknowledged_by %} ({{ who(alert.acknowledged_by) }}, {{ alert.acknowledged_at.strftime("%d. %m. %H:%M") }}){% endif %}</dd></div>
+  <div><dt>Převzít do</dt><dd>{{ alert.ack_deadline.strftime("%d. %m. %H:%M") }}{% if alert.fallback_level %} – <strong class="overdue"><span aria-hidden="true">⇪ </span>nepřevzato včas, předáno záložnímu kontaktu</strong>{% endif %}</dd></div>
+  <div><dt>Výsledek pravidel</dt><dd>{{ assessment_status[assessment.status] }} (pravidla v{{ assessment.ruleset_version }}, mapování v{{ assessment.mapping_version }}, dotazník v{{ assessment.questionnaire_version }})</dd></div>
+  {% if timeline.grouped %}
+  <div><dt>Další hlášení téže epizody</dt><dd>{{ timeline.grouped | length }}, poslední {{ timeline.grouped[-1].at.strftime("%d. %m. %H:%M") }} ({{ assessment_status[timeline.grouped[-1].assessment.status] | lower }}); viz <a href="#prubeh">Průběh příznaků</a></dd></div>
+  {% endif %}
+  <div><dt>Nahlášeno</dt><dd>{{ checkin.updated_at.strftime("%d. %m. %H:%M") }}, {{ "pacient" if checkin.reported_by == "patient" else "pečující osoba" }}</dd></div>
+  {% if accessibility %}
+  <div><dt>Potřeby při kontaktu</dt><dd>
+    {% set needs = [] %}
+    {% if accessibility.screen_reader %}{% set _ = needs.append("čtečka obrazovky") %}{% endif %}
+    {% if accessibility.voice_first %}{% set _ = needs.append("ovládání hlasem") %}{% endif %}
+    {% if accessibility.simplified %}{% set _ = needs.append("zjednodušený jazyk") %}{% endif %}
+    {% if accessibility.high_contrast %}{% set _ = needs.append("vysoký kontrast") %}{% endif %}
+    {% if accessibility.text_size != "normal" %}{% set _ = needs.append("větší písmo") %}{% endif %}
+    {{ needs | join(", ") if needs else "žádné uvedené" }}
+  </dd></div>
+  {% endif %}
+</dl>
+
+{% if alert.status == "open" %}
+<form method="post" action="/sestra/pripad/{{ alert.alert_id }}/prevzit">
+  <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+  <button type="submit" class="button button-primary">Převzít upozornění</button>
+</form>
+{% endif %}
+
+<h2>Proč upozornění vzniklo</h2>
+{% if assessment.triggered_rules %}
+<ul>
+  {% for rule in assessment.triggered_rules %}
+  <li><strong>{{ readable(rule.reason) }}</strong>
+    <details class="rule-inputs"><summary>Podklad: pravidlo {{ rule.rule_id }} v{{ rule.rule_version }} a jeho vstupy</summary>
+      <p class="hint">{% for key, value in rule.inputs.items() %}{{ key }} = {{ value }}{% if not loop.last %}, {% endif %}{% endfor %}</p>
+    </details>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}<p>Žádné pravidlo nezasáhlo.</p>{% endif %}
+{% if missing %}
+<h2>Chybějící informace</h2>
+<ul>{% for text in missing %}<li>{{ text }}</li>{% endfor %}</ul>
+{% endif %}
+
+<h2>Stupně CTCAE</h2>
+<p>Navržené systémem z odpovědí pacienta podle schváleného mapování. Platí až po vašem potvrzení.</p>
+{% for entry in grades %}
+{% set g = entry.current %}
+<section class="grade" id="stupen-{{ entry.proposed.grade_id }}" aria-labelledby="grade-{{ entry.proposed.grade_id }}">
+  <h3 id="grade-{{ entry.proposed.grade_id }}">{{ g.ctcae_term }} (CTCAE v{{ g.ctcae_version }}): {{ grade_text(g) }}</h3>
+  <p><strong class="grade-status grade-{{ g.status }}"><span aria-hidden="true">{{ grade_icon[g.status] }} </span>Stav: {{ grade_status[g.status] }}</strong>{% if g.confirmed_by %} ({{ who(g.confirmed_by) }}, {{ g.confirmed_at.strftime("%d. %m. %H:%M") }}){% endif %}</p>
+  <p>Návrh systému: {{ grade_text(entry.proposed) }}. Podklad:</p>
+  <ul>{% for line in entry.basis %}<li>{{ line }}</li>{% endfor %}</ul>
+  <p class="hint">Mapování {{ entry.proposed.mapping_id }} v{{ entry.proposed.mapping_version }}</p>
+  {% for review in entry.history %}{% if review.note %}<p>Poznámka ke změně: {{ review.note }}</p>{% endif %}{% endfor %}
+  {% set gid = entry.proposed.grade_id %}
+  {% set grade_err = errors.get(gid ~ ":grade") %}
+  {% set note_err = errors.get(gid ~ ":note") %}
+  {% set mine = submitted if submitted.get("grade_id") == gid else {} %}
+  {% set chosen = (mine.get("grade") | int(0)) or g.grade or g.at_least %}
+  <form method="post" action="/sestra/pripad/{{ alert.alert_id }}/stupen/{{ gid }}" novalidate>
+    <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+    <fieldset class="question"{% if grade_err %} aria-describedby="err-grade-{{ gid }}"{% endif %}>
+      <legend>Váš stupeň pro {{ g.ctcae_term }}</legend>
+      {% if grade_err %}<p id="err-grade-{{ gid }}" class="field-error"><span aria-hidden="true">⚠ </span>{{ grade_err }}</p>{% endif %}
+      <div class="grade-options">
+        {% for n in range(1, 6) %}
+        <label class="option option-compact"><input type="radio" name="grade" value="{{ n }}"{% if n == chosen %} checked{% endif %}{% if grade_err and ((chosen and n == chosen) or (not chosen and loop.first)) %} autofocus{% endif %}> <span>Stupeň {{ n }}</span></label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    <div class="field">
+      <label for="note-{{ gid }}">Poznámka (nutná při opravě)</label>
+      {% if note_err %}<p id="err-note-{{ gid }}" class="field-error"><span aria-hidden="true">⚠ </span>{{ note_err }}</p>{% endif %}
+      <textarea id="note-{{ gid }}" name="note" rows="2"{% if note_err %} aria-invalid="true" aria-describedby="err-note-{{ gid }}" autofocus{% endif %}>{{ mine.get("note", "") }}</textarea>
+    </div>
+    <button type="submit" class="button button-primary">Potvrdit stupeň<span class="visually-hidden"> pro {{ g.ctcae_term }}</span></button>
+  </form>
+</section>
+{% else %}
+<p>K tomuto hlášení systém nenavrhl žádný stupeň.</p>
+{% endfor %}
+
+<h2 id="prubeh">Průběh příznaků</h2>
+<p>Všechna hlášení pacienta, nejstarší nahoře, s nejvyšším stupněm CTCAE pro každý příznak. Pomlčka znamená, že systém stupeň nenavrhl, ne že potíž chybí.</p>
+{% set word_for = {"provisional": "předběžný", "confirmed": "potvrzený", "corrected": "opravený"} %}
+<div class="table-wrap" role="region" tabindex="0" aria-label="Průběh příznaků">
+<table class="data">
+  <caption>Průběh příznaků podle stupně CTCAE</caption>
+  <thead><tr><th scope="col">Nahlášeno</th><th scope="col">Výsledek pravidel</th>{% for term in timeline.terms %}<th scope="col">{{ term }}</th>{% endfor %}<th scope="col">Vztah k tomuto případu</th></tr></thead>
+  <tbody>
+    {% for row in timeline.rows %}
+    <tr{% if row.link == "this" %} aria-current="true"{% endif %}>
+      <th scope="row">{{ row.at.strftime("%d. %m. %H:%M") }}</th>
+      <td>{{ assessment_status[row.assessment.status] }}</td>
+      {% for g in row.cells %}
+      <td>{% if g %}<span aria-hidden="true">{{ grade_icon[g.status] }} </span>{{ grade_text(g) }} ({{ word_for[g.status] }}){% else %}<span aria-hidden="true">—</span><span class="visually-hidden">stupeň nenavržen</span>{% endif %}</td>
+      {% endfor %}
+      <td>{% if row.link == "this" %}<strong>toto hlášení</strong>{% elif row.link == "grouped" %}<strong>přičleněno k tomuto upozornění</strong>{% elif row.link == "other" %}<a href="/sestra/pripad/{{ row.other_alert.alert_id }}">jiné upozornění ({{ alert_status[row.other_alert.status] | lower }})<span class="visually-hidden"> z {{ row.at.strftime("%d. %m. %H:%M") }}</span></a>{% else %}bez upozornění{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<h2>Co pacient uvedl</h2>
+{% if written %}
+<h3>Vlastními slovy</h3>
+{% for message in written %}<blockquote class="written">{{ message.text }}</blockquote>{% endfor %}
+{% endif %}
+<div class="table-wrap" role="region" tabindex="0" aria-label="Odpovědi a zjištění">
+<table class="data">
+  <caption>Odpovědi a zjištění</caption>
+  <thead><tr><th scope="col">Otázka</th><th scope="col">Pacient uvádí</th><th scope="col">Odpověď nebo citace</th><th scope="col">Zdroj</th></tr></thead>
+  <tbody>
+    {% for f in findings %}
+    <tr>
+      <th scope="row">{{ f.question }}</th>
+      <td>{{ f.state }}</td>
+      <td>{% if f.quote %}„{{ f.quote }}“{% else %}{{ f.answer or "—" }}{% endif %}</td>
+      <td>{% if f.button %}tlačítko{% if f.confirmed %}, potvrzeno{% endif %}{% elif f.quote %}citace z textu{% elif f.unread %}celý text výše, model ho nečetl{% else %}—{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+{% if alert.status != "resolved" %}
+<h2>Vyřešit</h2>
+<form method="post" action="/sestra/pripad/{{ alert.alert_id }}/vyresit" novalidate>
+  <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+  <div class="field">
+    <label for="resolution">Co jste udělali</label>
+    {% if errors.resolve %}<p id="resolution-error" class="field-error"><span aria-hidden="true">⚠ </span>{{ errors.resolve }}</p>{% endif %}
+    <textarea id="resolution" name="note" rows="3"{% if errors.resolve %} aria-invalid="true" aria-describedby="resolution-error" autofocus{% endif %}>{{ submitted.get("note", "") if errors.resolve else "" }}</textarea>
+  </div>
+  <button type="submit" class="button button-secondary">Označit jako vyřešené</button>
+</form>
+{% else %}
+<h2>Vyřešeno</h2>
+<p>{{ who(alert.resolved_by) }}, {{ alert.resolved_at.strftime("%d. %m. %H:%M") }}: {{ alert.resolution_note }}</p>
+{% endif %}
+<p class="actions"><a class="button button-secondary" href="/sestra/pripad/{{ alert.alert_id }}/zaznam">Záznam případu a co viděl model</a> <a class="button button-secondary" href="/sestra">Zpět na frontu</a></p>
+{% endblock %}

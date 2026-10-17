@@ -1,0 +1,36 @@
+{% extends "nurse/layout.html" %}
+{% set section = "groups" %}
+{% block title %}Skupiny onemocnění{% endblock %}
+{% block content %}
+<h1>Skupiny onemocnění</h1>
+<p>Pacienti vašeho týmu podle skupiny onemocnění. Skupinu určuje diagnóza (MKN-10) z nemocničních dat v IRIS. Každá skupina má vlastní otázky navíc ke společným otázkám. {{ groups.approval }}, verze {{ groups.version }}.</p>
+<details>
+  <summary>Společné otázky pro všechny pacienty</summary>
+  <ul>
+    {% for item in core_questions %}<li>{{ item.text_cs }}{% if item.red_flag %} <strong>(varovný příznak)</strong>{% endif %}</li>{% endfor %}
+  </ul>
+</details>
+{% for section in sections %}
+<section aria-labelledby="group-{{ section.group_id }}">
+  <h2 id="group-{{ section.group_id }}">{{ section.name }} ({{ section.patients | length }})</h2>
+  {% if section.icd10 %}<p>Diagnózy MKN-10: {{ section.icd10 }}</p>{% endif %}
+  {% if section.questions %}
+  <h3>Otázky pro tuto skupinu</h3>
+  <ul>
+    {% for item in section.questions %}<li>{{ item.text_cs }}{% if item.red_flag %} <strong>(varovný příznak)</strong>{% endif %}</li>{% endfor %}
+  </ul>
+  {% endif %}
+  {% if section.patients %}
+  <div class="table-wrap" role="region" tabindex="0" aria-label="Pacienti: {{ section.name }}">
+  <table class="data">
+    <caption>Pacienti: {{ section.name }}</caption>
+    <thead><tr><th scope="col">Pacient</th><th scope="col">E-mail</th></tr></thead>
+    <tbody>
+      {% for p in section.patients %}<tr><th scope="row">{{ p.label }} ({{ p.patient_id }})</th><td>{{ p.email }}</td></tr>{% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% else %}<p>V této skupině nemáte žádného pacienta.</p>{% endif %}
+</section>
+{% endfor %}
+{% endblock %}

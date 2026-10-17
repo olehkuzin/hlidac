@@ -1,0 +1,68 @@
+{
+  "resourceType": "Questionnaire",
+  "meta": {"tag": [{"system": "urn:hlidac:tag", "code": "hlidac"}]},
+  "language": "cs",
+  "url": "urn:hlidac:questionnaire:test",
+  "identifier": [{"system": "urn:hlidac:questionnaire", "value": "test-v1"}],
+  "version": "1",
+  "name": "HlidacTestQuestionnaire",
+  "title": "TEST dotazník",
+  "status": "draft",
+  "subjectType": ["Patient"],
+  "publisher": "TEST tým (vymyšlené, jen pro testy)",
+  "description": "TEST: vymyšlený dotazník pro testy, bez klinického obsahu. DEMO — čeká na schválení FN Motol.",
+  "item": [
+    {
+      "linkId": "fever",
+      "text": "TEST Otázka na horečku?",
+      "type": "choice",
+      "required": true,
+      "code": [
+        {"system": "urn:hlidac:symptom", "code": "test-symptom", "display": "TEST symptom"},
+        {"system": "urn:hlidac:ctcae:v5.0", "code": "00000000", "display": "TEST CTCAE term"}
+      ],
+      "extension": [{"url": "urn:hlidac:extension:red-flag", "valueBoolean": true}],
+      "answerOption": [
+        {"valueCoding": {"system": "urn:hlidac:answer", "code": "yes", "display": "TEST Ano"}},
+        {"valueCoding": {"system": "urn:hlidac:answer", "code": "no", "display": "TEST Ne"}},
+        {"valueCoding": {"system": "urn:hlidac:answer", "code": "dont_know", "display": "TEST Nevím"}}
+      ]
+    },
+    {
+      "linkId": "temperature",
+      "text": "TEST Otázka na teplotu?",
+      "type": "quantity",
+      "required": false,
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-unit",
+          "valueCoding": {"system": "http://unitsofmeasure.org", "code": "Cel", "display": "°C"}
+        }
+      ],
+      "enableWhen": [
+        {
+          "question": "fever",
+          "operator": "=",
+          "answerCoding": {"system": "urn:hlidac:answer", "code": "yes"}
+        }
+      ]
+    },
+    {
+      "linkId": "nausea",
+      "text": "TEST Otázka na nevolnost?",
+      "type": "choice",
+      "required": true,
+      "answerOption": [
+        {"valueCoding": {"system": "urn:hlidac:answer", "code": "no", "display": "TEST Žádná"}},
+        {"valueCoding": {"system": "urn:hlidac:answer", "code": "mild", "display": "TEST Mírná"}},
+        {"valueCoding": {"system": "urn:hlidac:answer", "code": "dont_know", "display": "TEST Nevím"}}
+      ]
+    },
+    {
+      "linkId": "note",
+      "text": "TEST Poznámka",
+      "type": "text",
+      "required": false
+    }
+  ]
+}

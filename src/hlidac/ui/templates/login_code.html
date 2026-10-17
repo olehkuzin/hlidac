@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{% if error %}Chyba: {% endif %}Zadejte kód{% endblock %}
+{% block content %}
+<h1>Zadejte kód z e-mailu</h1>
+<p>Pokud je váš e-mail u nás registrovaný, poslali jsme na něj kód o 6 číslicích. Kód platí 10 minut.</p>
+<form method="post" action="/prihlaseni/kod" novalidate>
+  <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+  <div class="field">
+    <label for="code">Kód z e-mailu</label>
+    <p id="code-hint" class="hint">6 číslic. Kód můžete do pole i vložit.</p>
+    {% if error %}<p id="code-error" class="field-error" role="alert"><span aria-hidden="true">⚠ </span>{{ error }}</p>{% endif %}
+    <input id="code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code"
+           class="input-code" spellcheck="false"
+           aria-describedby="{% if error %}code-error {% endif %}code-hint"
+           {% if error %}aria-invalid="true" autofocus{% endif %}>
+  </div>
+  <button type="submit" class="button button-primary">Přihlásit se</button>
+</form>
+<h2>Kód nepřišel?</h2>
+<p>Podívejte se i do složky s nevyžádanou poštou. Nový kód si můžete nechat poslat nejvýše 3krát za 15 minut.</p>
+<form method="post" action="/prihlaseni/novy-kod">
+  <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+  <button type="submit" class="button button-secondary">Poslat nový kód</button>
+</form>
+<p class="actions"><a class="button button-secondary" href="/prihlaseni">Zadat jiný e-mail</a></p>
+{% if skip_login %}
+{# TEMPORARY, demo only (DEMO_SKIP_LOGIN, localhost only): remove after the demo. #}
+<form method="post" action="/prihlaseni/preskocit">
+  <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+  <button type="submit" class="button button-secondary">Přeskočit ověření (DEMO)</button>
+</form>
+{% endif %}
+{% endblock %}

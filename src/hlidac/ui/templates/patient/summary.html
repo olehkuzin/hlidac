@@ -1,0 +1,32 @@
+{% extends "patient/layout.html" %}
+{% block title %}Odeslat hlášení{% endblock %}
+{% block page %}
+<h1>Odeslat hlášení</h1>
+{% if open_item %}
+<p>Na některé otázky jste ještě neodpověděli. Hlášení můžete odeslat i tak.</p>
+<p class="actions"><a class="button button-secondary" href="{{ open_href }}">Odpovědět na zbylé otázky</a></p>
+{% else %}
+<p>Zkontrolujte prosím své odpovědi. Každou můžete změnit.</p>
+{% endif %}
+{% if written %}
+<h2>Co jste napsali</h2>
+{% for text in written %}<blockquote class="written">{{ text }}</blockquote>{% endfor %}
+{% endif %}
+{% if answers %}
+<h2>Vaše odpovědi</h2>
+<dl class="answers">
+  {% for item, answer_text, href in answers %}
+  <div class="answer">
+    <dt>{{ item.text_cs }}</dt>
+    <dd>{{ answer_text }} <a href="{{ href }}">Změnit<span class="visually-hidden"> odpověď: {{ item.text_cs }}</span></a></dd>
+  </div>
+  {% endfor %}
+</dl>
+{% endif %}
+<form method="post" action="{{ base }}/odeslat">
+  <input type="hidden" name="{{ csrf_field }}" value="{{ csrf_token }}">
+  <input type="hidden" name="confirm" value="1">{# the answers above are what the patient checked (D58) #}
+  <button type="submit" class="button button-primary">Odeslat hlášení</button>
+</form>
+<p class="actions"><a class="button button-secondary" href="{{ back }}">Zpět</a></p>
+{% endblock %}

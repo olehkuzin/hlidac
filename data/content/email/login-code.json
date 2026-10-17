@@ -1,0 +1,14 @@
+{
+  "template_id": "login-code",
+  "version": "1",
+  "approval": "DEMO — čeká na schválení FN Motol",
+  "source_ref": "Team-written login notice; no clinical content (architecture/accessibility.md §6, D18)",
+  "subject": "Přihlašovací kód do aplikace Hlídač příznaků",
+  "paragraphs": [
+    "Dobrý den,",
+    "toto je váš přihlašovací kód do aplikace Hlídač příznaků:",
+    "{code}",
+    "Kód platí 10 minut a dá se použít jen jednou.",
+    "Pokud jste o kód nežádali, nemusíte nic dělat."
+  ]
+}

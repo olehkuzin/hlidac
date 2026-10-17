@@ -1,0 +1,18 @@
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+
+# Secrets
+.env
+
+# UKONS v3 transcription: "This Tool Kit cannot be reproduced. All rights reserved." Kept local
+# until the team decides or UKONS permits it (D32). Its tests skip when the file is absent.
+data/ctcae/ukons-v3.yaml

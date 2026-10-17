@@ -1,0 +1,671 @@
+{
+ "about": "S3 (Sat 17 Oct 2026): real replies of the organisers' Azure OpenAI deployments (EU data zone, reasoning_effort low, seed fixed) to three TEAM-WRITTEN messages. No patient data: every message is invented. Questionnaire urn:hlidac:questionnaire:demo version 1, extractor extract-v1.",
+ "recordings": [
+  {
+   "scenario": "mild",
+   "deployment": "gpt-6-1-sol-dz-eu",
+   "model_version": "gpt-6.1-sol-2026-09-29",
+   "run": 0,
+   "message": "Dobrý den, je mi trochu špatně od žaludku, ale jím a piju normálně. Horečku nemám, zimnici taky ne.",
+   "sent": "Dobrý den, je mi trochu špatně od žaludku, ale jím a piju normálně. Horečku nemám, zimnici taky ne.",
+   "reply": {
+    "fever": {
+     "state": "absent",
+     "option": "no",
+     "quote": "Horečku nemám"
+    },
+    "temperature": {
+     "state": "not_mentioned",
+     "value": null,
+     "quote": null
+    },
+    "chills": {
+     "state": "absent",
+     "option": "no",
+     "quote": "zimnici taky ne"
+    },
+    "chills_severity": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "unwell": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "nausea": {
+     "state": "present",
+     "option": "yes",
+     "quote": "je mi trochu špatně od žaludku"
+    },
+    "nausea_intake": {
+     "state": "present",
+     "option": "intake_usual",
+     "quote": "jím a piju normálně"
+    },
+    "vomiting": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "vomiting_episodes": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea_stools": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea_blood": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "other": {
+     "state": "not_mentioned",
+     "quote": null
+    }
+   }
+  },
+  {
+   "scenario": "fever",
+   "deployment": "gpt-6-1-sol-dz-eu",
+   "model_version": "gpt-6.1-sol-2026-09-29",
+   "run": 0,
+   "message": "Od rána mám teplotu 38,6 a třese mnou zimnice po celém těle. Je mi celkově hrozně zle.",
+   "sent": "Od rána mám teplotu 38,6 a třese mnou zimnice po celém těle. Je mi celkově hrozně zle.",
+   "reply": {
+    "fever": {
+     "state": "present",
+     "option": "yes",
+     "quote": "Od rána mám teplotu 38,6"
+    },
+    "temperature": {
+     "state": "present",
+     "value": 38.6,
+     "quote": "Od rána mám teplotu 38,6"
+    },
+    "chills": {
+     "state": "present",
+     "option": "yes",
+     "quote": "třese mnou zimnice"
+    },
+    "chills_severity": {
+     "state": "present",
+     "option": "whole_body",
+     "quote": "třese mnou zimnice po celém těle"
+    },
+    "unwell": {
+     "state": "present",
+     "option": "yes",
+     "quote": "Je mi celkově hrozně zle"
+    },
+    "nausea": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "nausea_intake": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "vomiting": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "vomiting_episodes": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea_stools": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea_blood": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "other": {
+     "state": "not_mentioned",
+     "quote": null
+    }
+   }
+  },
+  {
+   "scenario": "ambiguous",
+   "deployment": "gpt-6-1-sol-dz-eu",
+   "model_version": "gpt-6.1-sol-2026-09-29",
+   "run": 0,
+   "message": "Dneska jsem zvracela a skoro nic nepila. Nevím, jestli mám teplotu, neměřila jsem.",
+   "sent": "Dneska jsem zvracela a skoro nic nepila. Nevím, jestli mám teplotu, neměřila jsem.",
+   "reply": {
+    "fever": {
+     "state": "unknown",
+     "option": "dont_know",
+     "quote": "Nevím, jestli mám teplotu"
+    },
+    "temperature": {
+     "state": "unknown",
+     "value": null,
+     "quote": "neměřila jsem"
+    },
+    "chills": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "chills_severity": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "unwell": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "nausea": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "nausea_intake": {
+     "state": "present",
+     "option": "intake_minimal",
+     "quote": "skoro nic nepila"
+    },
+    "vomiting": {
+     "state": "present",
+     "option": "yes",
+     "quote": "Dneska jsem zvracela"
+    },
+    "vomiting_episodes": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea_stools": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea_blood": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "other": {
+     "state": "not_mentioned",
+     "quote": null
+    }
+   }
+  },
+  {
+   "scenario": "mild",
+   "deployment": "gpt-6-luna-dz-eu",
+   "model_version": "gpt-6-luna-2026-09-22",
+   "run": 1,
+   "message": "Dobrý den, je mi trochu špatně od žaludku, ale jím a piju normálně. Horečku nemám, zimnici taky ne.",
+   "sent": "Dobrý den, je mi trochu špatně od žaludku, ale jím a piju normálně. Horečku nemám, zimnici taky ne.",
+   "reply": {
+    "fever": {
+     "state": "absent",
+     "option": "no",
+     "quote": "Horečku nemám"
+    },
+    "temperature": {
+     "state": "not_mentioned",
+     "value": null,
+     "quote": null
+    },
+    "chills": {
+     "state": "absent",
+     "option": "no",
+     "quote": "zimnici taky ne"
+    },
+    "chills_severity": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "unwell": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "nausea": {
+     "state": "present",
+     "option": "yes",
+     "quote": "je mi trochu špatně od žaludku"
+    },
+    "nausea_intake": {
+     "state": "present",
+     "option": "intake_usual",
+     "quote": "jím a piju normálně"
+    },
+    "vomiting": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "vomiting_episodes": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea_stools": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea_blood": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "other": {
+     "state": "not_mentioned",
+     "quote": null
+    }
+   }
+  },
+  {
+   "scenario": "fever",
+   "deployment": "gpt-6-luna-dz-eu",
+   "model_version": "gpt-6-luna-2026-09-22",
+   "run": 1,
+   "message": "Od rána mám teplotu 38,6 a třese mnou zimnice po celém těle. Je mi celkově hrozně zle.",
+   "sent": "Od rána mám teplotu 38,6 a třese mnou zimnice po celém těle. Je mi celkově hrozně zle.",
+   "reply": {
+    "fever": {
+     "state": "present",
+     "option": "yes",
+     "quote": "mám teplotu 38,6"
+    },
+    "temperature": {
+     "state": "present",
+     "value": 38.6,
+     "quote": "38,6"
+    },
+    "chills": {
+     "state": "present",
+     "option": "yes",
+     "quote": "třese mnou zimnice"
+    },
+    "chills_severity": {
+     "state": "present",
+     "option": "whole_body",
+     "quote": "po celém těle"
+    },
+    "unwell": {
+     "state": "present",
+     "option": "yes",
+     "quote": "Je mi celkově hrozně zle."
+    },
+    "nausea": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "nausea_intake": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "vomiting": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "vomiting_episodes": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea_stools": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea_blood": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "other": {
+     "state": "not_mentioned",
+     "quote": null
+    }
+   }
+  },
+  {
+   "scenario": "ambiguous",
+   "deployment": "gpt-6-luna-dz-eu",
+   "model_version": "gpt-6-luna-2026-09-22",
+   "run": 1,
+   "message": "Dneska jsem zvracela a skoro nic nepila. Nevím, jestli mám teplotu, neměřila jsem.",
+   "sent": "Dneska jsem zvracela a skoro nic nepila. Nevím, jestli mám teplotu, neměřila jsem.",
+   "reply": {
+    "fever": {
+     "state": "unknown",
+     "option": "dont_know",
+     "quote": "Nevím, jestli mám teplotu"
+    },
+    "temperature": {
+     "state": "unknown",
+     "value": null,
+     "quote": "neměřila jsem"
+    },
+    "chills": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "chills_severity": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "unwell": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "nausea": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "nausea_intake": {
+     "state": "present",
+     "option": null,
+     "quote": "skoro nic nepila"
+    },
+    "vomiting": {
+     "state": "present",
+     "option": "yes",
+     "quote": "Dneska jsem zvracela"
+    },
+    "vomiting_episodes": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea_stools": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea_blood": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "other": {
+     "state": "not_mentioned",
+     "quote": null
+    }
+   }
+  },
+  {
+   "scenario": "mild",
+   "deployment": "gpt-6-luna-dz-eu",
+   "model_version": "gpt-6-luna-2026-09-22",
+   "run": 2,
+   "message": "Dobrý den, je mi trochu špatně od žaludku, ale jím a piju normálně. Horečku nemám, zimnici taky ne.",
+   "sent": "Dobrý den, je mi trochu špatně od žaludku, ale jím a piju normálně. Horečku nemám, zimnici taky ne.",
+   "reply": {
+    "fever": {
+     "state": "absent",
+     "option": "no",
+     "quote": "Horečku nemám"
+    },
+    "temperature": {
+     "state": "not_mentioned",
+     "value": null,
+     "quote": null
+    },
+    "chills": {
+     "state": "absent",
+     "option": "no",
+     "quote": "zimnici taky ne"
+    },
+    "chills_severity": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "unwell": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "nausea": {
+     "state": "present",
+     "option": "yes",
+     "quote": "je mi trochu špatně od žaludku"
+    },
+    "nausea_intake": {
+     "state": "present",
+     "option": "intake_usual",
+     "quote": "jím a piju normálně"
+    },
+    "vomiting": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "vomiting_episodes": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea_stools": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea_blood": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "other": {
+     "state": "not_mentioned",
+     "quote": null
+    }
+   }
+  },
+  {
+   "scenario": "fever",
+   "deployment": "gpt-6-luna-dz-eu",
+   "model_version": "gpt-6-luna-2026-09-22",
+   "run": 2,
+   "message": "Od rána mám teplotu 38,6 a třese mnou zimnice po celém těle. Je mi celkově hrozně zle.",
+   "sent": "Od rána mám teplotu 38,6 a třese mnou zimnice po celém těle. Je mi celkově hrozně zle.",
+   "reply": {
+    "fever": {
+     "state": "present",
+     "option": "yes",
+     "quote": "mám teplotu 38,6"
+    },
+    "temperature": {
+     "state": "present",
+     "value": 38.6,
+     "quote": "38,6"
+    },
+    "chills": {
+     "state": "present",
+     "option": "yes",
+     "quote": "třese mnou zimnice"
+    },
+    "chills_severity": {
+     "state": "present",
+     "option": "whole_body",
+     "quote": "po celém těle"
+    },
+    "unwell": {
+     "state": "present",
+     "option": "yes",
+     "quote": "Je mi celkově hrozně zle."
+    },
+    "nausea": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "nausea_intake": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "vomiting": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "vomiting_episodes": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea_stools": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea_blood": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "other": {
+     "state": "not_mentioned",
+     "quote": null
+    }
+   }
+  },
+  {
+   "scenario": "ambiguous",
+   "deployment": "gpt-6-luna-dz-eu",
+   "model_version": "gpt-6-luna-2026-09-22",
+   "run": 2,
+   "message": "Dneska jsem zvracela a skoro nic nepila. Nevím, jestli mám teplotu, neměřila jsem.",
+   "sent": "Dneska jsem zvracela a skoro nic nepila. Nevím, jestli mám teplotu, neměřila jsem.",
+   "reply": {
+    "fever": {
+     "state": "unknown",
+     "option": "dont_know",
+     "quote": "Nevím, jestli mám teplotu"
+    },
+    "temperature": {
+     "state": "unknown",
+     "value": null,
+     "quote": "neměřila jsem"
+    },
+    "chills": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "chills_severity": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "unwell": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "nausea": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "nausea_intake": {
+     "state": "present",
+     "option": "intake_minimal",
+     "quote": "skoro nic nepila"
+    },
+    "vomiting": {
+     "state": "present",
+     "option": "yes",
+     "quote": "Dneska jsem zvracela"
+    },
+    "vomiting_episodes": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea_stools": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "diarrhoea_blood": {
+     "state": "not_mentioned",
+     "option": null,
+     "quote": null
+    },
+    "other": {
+     "state": "not_mentioned",
+     "quote": null
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,435 @@
+# Illness groups (D50, split into 20 groups by D51): every cancer group in the hospital data gets its
+# own check-in questionnaire. Read by src/hlidac/groups.py, which builds
+# data/questionnaires/symptoms-group-*.json and data/plans/symptoms-group-*.plan.yaml from this file
+# (`uv run python -m hlidac.groups build`) and assigns patients to a group by the ICD-10 codes of
+# their hospital `Condition`s in IRIS (read-only, never shown or stored outside IRIS).
+#
+# Every group questionnaire = the shared core items of symptoms-demo-v1.json (fever, chills,
+# unwell, nausea, vomiting, diarrhoea, so CTCAE grading and the UKONS rules work unchanged) + the
+# group's own items below + the free-text item. The group items are not graded by CTCAE: a "yes"
+# raises a routine review by the rule `group-symptom-reported` (rules-demo-v1.yaml), a red-flag item
+# is asked first with buttons and raises a review by `red-flag-present`, and "Nevím" or no answer
+# counts as missing (insufficient information). Nothing here can lower urgency.
+#
+# Verified against the real hospital data in IRIS (D51, counts only, docs/illness-groups.md): every
+# one of the 325 patients with an ICD-10 cancer code and every one of the 73 patients with dose
+# records falls in exactly one group, and every group has patients.
+#
+# The ten original group ids (breast, digestive, lung, urological, gynaecological, haematological,
+# head_neck, brain, skin, sarcoma) keep their questionnaire URLs, so plans already seeded in IRIS
+# stay valid; D51 narrowed them and split off the other ten.
+#
+# Written by the team for the demo. The team (Nazar, 17 Oct 2026) reports that FN Motol agreed to
+# this demo use; it is not a clinical sign-off of each item. No patient data.
+content_id: groups-demo
+version: "1"
+approval: "DEMO — použití pro demo odsouhlaseno FN Motol (podle týmu, 17. 10. 2026)"
+approved_by: null
+source_ref: >-
+  Team-written demo content (Rakathon 2026, team VI-KA); demo use agreed with FN Motol as reported
+  by the team on 17 Oct 2026. ICD-10 blocks from WHO ICD-10 chapter II (Neoplasms, C00-D48); D38
+  (uncertain behaviour, middle ear, respiratory and intrathoracic organs) joins the lung group.
+  Group symptoms are common treatment side effects and warning signs per tumour site, written in
+  plain Czech by the team; not a clinical sign-off of each item.
+# Patients whose codes match no group keep the general demo questionnaire.
+fallback_questionnaire: {url: "urn:hlidac:questionnaire:demo", version: "1"}
+
+groups:
+  - group_id: breast
+    name_cs: "Nádory prsu"
+    icd10: ["C50"]
+    items:
+      - link_id: breast_arm_swelling
+        label_cs: "otok paže"
+        text: "Máte otok paže nebo ruky na straně operace?"
+      - link_id: breast_skin
+        label_cs: "kůže v místě ozařování nebo operace"
+        text: "Je kůže v místě ozařování nebo operace zarudlá, bolestivá nebo mokvá?"
+      - link_id: breast_joint_pain
+        label_cs: "bolest kloubů a svalů"
+        text: "Bolí vás klouby nebo svaly víc než obvykle?"
+      - link_id: gi_tingling
+        label_cs: "brnění prstů"
+        text: "Máte brnění nebo necitlivost v prstech rukou nebo nohou?"
+
+  - group_id: upper_gi
+    name_cs: "Nádory jícnu a žaludku"
+    icd10: ["C15-C16"]
+    items:
+      - link_id: gi_cannot_swallow
+        label_cs: "nemůže polknout ani tekutiny"
+        text: "Nemůžete polknout ani vodu nebo jiné tekutiny?"
+        red_flag: true
+      - link_id: gi_black_stool
+        label_cs: "černá stolice nebo zvracení krve"
+        text: "Máte černou stolici nebo zvracíte krev?"
+        red_flag: true
+      - link_id: gi_weight_loss
+        label_cs: "hubnutí"
+        text: "Hubnete, i když se snažíte jíst?"
+      - link_id: gi_tingling
+        label_cs: "brnění prstů"
+        text: "Máte brnění nebo necitlivost v prstech rukou nebo nohou?"
+
+  - group_id: digestive
+    name_cs: "Nádory střeva, konečníku a řitě"
+    icd10: ["C17-C21"]
+    items:
+      - link_id: gi_abdominal_pain
+        label_cs: "silná bolest břicha"
+        text: "Máte silnou bolest břicha, která neustupuje?"
+        red_flag: true
+      - link_id: gi_rectal_bleeding
+        label_cs: "krev ve stolici"
+        text: "Krvácíte z konečníku nebo máte ve stolici krev?"
+        red_flag: true
+      - link_id: gi_constipation
+        label_cs: "zácpa déle než 3 dny"
+        text: "Je to víc než 3 dny od vaší poslední stolice?"
+      - link_id: gi_tingling
+        label_cs: "brnění prstů"
+        text: "Máte brnění nebo necitlivost v prstech rukou nebo nohou?"
+      - link_id: gi_hand_foot
+        label_cs: "bolavé dlaně nebo chodidla"
+        text: "Máte zarudlé, oteklé nebo bolavé dlaně nebo chodidla?"
+      - link_id: gi_stoma
+        label_cs: "potíže se stomií"
+        text: "Pokud máte stomii: krvácí, je oteklá nebo z ní nic neodchází?"
+
+  - group_id: liver_pancreas
+    name_cs: "Nádory jater, žlučových cest a slinivky"
+    icd10: ["C22-C25"]
+    items:
+      - link_id: gi_jaundice
+        label_cs: "zežloutnutí kůže nebo očí"
+        text: "Máte zežloutlou kůži nebo oční bělmo, nebo tmavou moč?"
+        red_flag: true
+      - link_id: gi_abdominal_pain
+        label_cs: "silná bolest břicha"
+        text: "Máte silnou bolest břicha, která neustupuje?"
+        red_flag: true
+      - link_id: gi_fatty_stool
+        label_cs: "světlá nebo mastná stolice"
+        text: "Je vaše stolice světlá, mastná nebo zapáchá víc než obvykle?"
+      - link_id: gi_thirst
+        label_cs: "velká žízeň nebo časté močení"
+        text: "Máte velkou žízeň nebo močíte častěji než obvykle?"
+
+  - group_id: lung
+    name_cs: "Nádory plic a hrudníku"
+    icd10: ["C33-C39", "C45", "D38"]
+    items:
+      - link_id: lung_breathless
+        label_cs: "dušnost"
+        text: "Dýchá se vám hůř než obvykle nebo se zadýcháte i v klidu?"
+        red_flag: true
+      - link_id: lung_blood_cough
+        label_cs: "krev při kašli"
+        text: "Objevila se při kašli krev?"
+        red_flag: true
+      - link_id: lung_chest_pain
+        label_cs: "bolest na hrudi"
+        text: "Máte bolest na hrudi?"
+        red_flag: true
+      - link_id: lung_cough
+        label_cs: "nový nebo silnější kašel"
+        text: "Máte nový nebo silnější kašel?"
+
+  - group_id: prostate
+    name_cs: "Nádory prostaty"
+    icd10: ["C61"]
+    items:
+      - link_id: uro_little_urine
+        label_cs: "málo moči"
+        text: "Močíte mnohem méně než obvykle, nebo vůbec?"
+        red_flag: true
+      - link_id: pros_leg_weakness
+        label_cs: "slabost nohou nebo únik moči či stolice"
+        text: "Máte novou slabost nebo necitlivost nohou, nebo nemůžete udržet moč či stolici?"
+        red_flag: true
+      - link_id: uro_urine_blood
+        label_cs: "krev v moči"
+        text: "Objevila se vám v moči krev?"
+        red_flag: true
+      - link_id: pros_bone_pain
+        label_cs: "bolest kostí nebo zad"
+        text: "Máte novou nebo silnější bolest kostí nebo zad?"
+      - link_id: pros_hot_flushes
+        label_cs: "návaly horka"
+        text: "Máte návaly horka nebo se víc potíte?"
+
+  - group_id: testis
+    name_cs: "Nádory varlat a pyje"
+    icd10: ["C60", "C62-C63"]
+    items:
+      - link_id: lung_breathless
+        label_cs: "dušnost"
+        text: "Dýchá se vám hůř než obvykle nebo se zadýcháte i v klidu?"
+        red_flag: true
+      - link_id: gi_tingling
+        label_cs: "brnění prstů"
+        text: "Máte brnění nebo necitlivost v prstech rukou nebo nohou?"
+      - link_id: ear_ringing
+        label_cs: "zhoršený sluch nebo zvonění v uších"
+        text: "Slyšíte hůř než dřív nebo vám zvoní v uších?"
+      - link_id: uro_painful_urination
+        label_cs: "bolestivé močení"
+        text: "Pálí nebo bolí vás při močení?"
+
+  - group_id: urological
+    name_cs: "Nádory ledvin a močových cest"
+    icd10: ["C64-C68"]
+    items:
+      - link_id: uro_urine_blood
+        label_cs: "krev v moči"
+        text: "Objevila se vám v moči krev?"
+        red_flag: true
+      - link_id: uro_little_urine
+        label_cs: "málo moči"
+        text: "Močíte mnohem méně než obvykle, nebo vůbec?"
+        red_flag: true
+      - link_id: uro_painful_urination
+        label_cs: "bolestivé močení"
+        text: "Pálí nebo bolí vás při močení?"
+      - link_id: uro_flank_pain
+        label_cs: "bolest v boku nebo v zádech"
+        text: "Máte bolest v boku nebo v dolní části zad?"
+
+  - group_id: gynaecological
+    name_cs: "Nádory děložního hrdla, pochvy a zevních rodidel"
+    icd10: ["C51-C53"]
+    items:
+      - link_id: gyn_bleeding
+        label_cs: "krvácení z pochvy"
+        text: "Máte krvácení z pochvy, které je nové nebo silnější než obvykle?"
+        red_flag: true
+      - link_id: gyn_leg_swelling
+        label_cs: "oteklá jedna noha"
+        text: "Máte jednu nohu oteklou, bolestivou nebo zarudlou?"
+        red_flag: true
+      - link_id: gyn_discharge
+        label_cs: "nový výtok"
+        text: "Máte nový nebo zapáchající výtok z pochvy?"
+      - link_id: gyn_painful_urination
+        label_cs: "bolestivé močení"
+        text: "Pálí nebo bolí vás při močení?"
+
+  - group_id: uterus
+    name_cs: "Nádory dělohy"
+    icd10: ["C54-C55", "C58"]
+    items:
+      - link_id: gyn_bleeding
+        label_cs: "krvácení z pochvy"
+        text: "Máte krvácení z pochvy, které je nové nebo silnější než obvykle?"
+        red_flag: true
+      - link_id: gyn_leg_swelling
+        label_cs: "oteklá jedna noha"
+        text: "Máte jednu nohu oteklou, bolestivou nebo zarudlou?"
+        red_flag: true
+      - link_id: gyn_abdomen_swelling
+        label_cs: "nafouklé břicho"
+        text: "Máte nafouklé břicho nebo se vám břicho zvětšuje?"
+      - link_id: gyn_painful_urination
+        label_cs: "bolestivé močení"
+        text: "Pálí nebo bolí vás při močení?"
+
+  - group_id: ovary
+    name_cs: "Nádory vaječníků a vejcovodů"
+    icd10: ["C56-C57"]
+    items:
+      - link_id: ov_obstruction
+        label_cs: "nemůže na stolici ani odchod větrů"
+        text: "Nemůžete mít stolici ani vám neodcházejí větry a máte nafouklé břicho?"
+        red_flag: true
+      - link_id: gyn_leg_swelling
+        label_cs: "oteklá jedna noha"
+        text: "Máte jednu nohu oteklou, bolestivou nebo zarudlou?"
+        red_flag: true
+      - link_id: gyn_abdomen_swelling
+        label_cs: "nafouklé břicho"
+        text: "Máte nafouklé břicho nebo se vám břicho zvětšuje?"
+      - link_id: gi_tingling
+        label_cs: "brnění prstů"
+        text: "Máte brnění nebo necitlivost v prstech rukou nebo nohou?"
+
+  - group_id: haematological
+    name_cs: "Lymfomy"
+    icd10: ["C81-C88"]
+    items:
+      - link_id: haem_bleeding
+        label_cs: "krvácení nebo modřiny"
+        text: "Krvácíte z nosu nebo z dásní, nebo máte nové modřiny bez úderu?"
+        red_flag: true
+      - link_id: haem_nodes
+        label_cs: "zvětšené uzliny"
+        text: "Zvětšily se vám uzliny na krku, v podpaží nebo v tříslech?"
+      - link_id: haem_night_sweats
+        label_cs: "noční pocení"
+        text: "Potíte se v noci tak, že musíte měnit prádlo?"
+      - link_id: haem_mouth_sores
+        label_cs: "vřídky v ústech"
+        text: "Máte v ústech bolavé vřídky?"
+
+  - group_id: leukaemia_myeloma
+    name_cs: "Leukémie a mnohočetný myelom"
+    icd10: ["C90-C96"]
+    items:
+      - link_id: haem_bleeding
+        label_cs: "krvácení nebo modřiny"
+        text: "Krvácíte z nosu nebo z dásní, nebo máte nové modřiny bez úderu?"
+        red_flag: true
+      - link_id: haem_thirst_confusion
+        label_cs: "velká žízeň, zácpa nebo zmatenost"
+        text: "Máte velkou žízeň a zácpu, nebo jste zmatenější než obvykle?"
+        red_flag: true
+      - link_id: haem_pale_tired
+        label_cs: "bledost a zadýchávání"
+        text: "Jste bledší a zadýcháte se už při malé námaze?"
+      - link_id: pros_bone_pain
+        label_cs: "bolest kostí nebo zad"
+        text: "Máte novou nebo silnější bolest kostí nebo zad?"
+      - link_id: haem_mouth_sores
+        label_cs: "vřídky v ústech"
+        text: "Máte v ústech bolavé vřídky?"
+
+  - group_id: head_neck
+    name_cs: "Nádory hlavy a krku"
+    icd10: ["C00-C14", "C30-C32"]
+    items:
+      - link_id: hn_breathing
+        label_cs: "hlučný nebo ztížený dech"
+        text: "Máte hlučný dech nebo se vám hůř dýchá?"
+        red_flag: true
+      - link_id: hn_bleeding
+        label_cs: "krvácení z úst, nosu nebo krku"
+        text: "Krvácíte z úst, z nosu nebo z rány na krku?"
+        red_flag: true
+      - link_id: hn_swallowing
+        label_cs: "potíže s polykáním"
+        text: "Polykáte hůř než obvykle nebo vás polykání bolí?"
+      - link_id: hn_mouth_sores
+        label_cs: "vřídky nebo povlak v ústech"
+        text: "Máte v ústech bolavé vřídky nebo bílý povlak?"
+      - link_id: hn_neck_skin
+        label_cs: "kůže na krku v místě ozařování"
+        text: "Je kůže na krku v místě ozařování zarudlá, bolestivá nebo mokvá?"
+
+  - group_id: thyroid
+    name_cs: "Nádory štítné žlázy a žláz s vnitřní sekrecí"
+    icd10: ["C73-C75"]
+    items:
+      - link_id: hn_breathing
+        label_cs: "hlučný nebo ztížený dech"
+        text: "Máte hlučný dech nebo se vám hůř dýchá?"
+        red_flag: true
+      - link_id: thy_cramps
+        label_cs: "brnění kolem úst nebo křeče"
+        text: "Máte brnění kolem úst nebo v prstech, nebo křeče ve svalech?"
+      - link_id: thy_palpitations
+        label_cs: "bušení srdce"
+        text: "Bije vám srdce rychle nebo nepravidelně?"
+      - link_id: hn_swallowing
+        label_cs: "potíže s polykáním"
+        text: "Polykáte hůř než obvykle nebo vás polykání bolí?"
+
+  - group_id: brain
+    name_cs: "Nádory mozku, oka a nervové soustavy"
+    icd10: ["C69-C72"]
+    items:
+      - link_id: cns_seizure
+        label_cs: "křeče nebo ztráta vědomí"
+        text: "Objevil se u vás záchvat křečí nebo krátká ztráta vědomí?"
+        red_flag: true
+      - link_id: cns_weakness
+        label_cs: "slabost jedné strany nebo potíže s řečí"
+        text: "Máte novou slabost nebo necitlivost jedné strany těla, nebo potíže s řečí?"
+        red_flag: true
+      - link_id: cns_confusion
+        label_cs: "zmatenost nebo spavost"
+        text: "Jste zmatenější nebo spavější než obvykle? Mohou to říct i vaši blízcí."
+        red_flag: true
+      - link_id: cns_headache
+        label_cs: "silnější bolest hlavy"
+        text: "Bolí vás hlava víc než obvykle?"
+
+  - group_id: skin
+    name_cs: "Melanom"
+    icd10: ["C43"]
+    items:
+      - link_id: skin_breathless_cough
+        label_cs: "nový kašel nebo dušnost"
+        text: "Máte nový kašel nebo se vám hůř dýchá?"
+        red_flag: true
+      - link_id: mel_headache_vision
+        label_cs: "silná bolest hlavy nebo potíže se zrakem"
+        text: "Máte silnou bolest hlavy nebo vidíte hůř než obvykle?"
+        red_flag: true
+      - link_id: gi_jaundice
+        label_cs: "zežloutnutí kůže nebo očí"
+        text: "Máte zežloutlou kůži nebo oční bělmo, nebo tmavou moč?"
+        red_flag: true
+      - link_id: skin_rash
+        label_cs: "vyrážka nebo svědění"
+        text: "Máte novou vyrážku nebo vás svědí kůže?"
+      - link_id: skin_thirst
+        label_cs: "velká žízeň nebo časté močení"
+        text: "Máte velkou žízeň, močíte často nebo jste velmi unavení?"
+
+  - group_id: skin_other
+    name_cs: "Ostatní nádory kůže"
+    icd10: ["C44"]
+    items:
+      - link_id: skin_wound
+        label_cs: "zarudlá nebo mokvající rána"
+        text: "Je rána nebo místo ozařování zarudlé, oteklé nebo mokvá?"
+      - link_id: skin_rash
+        label_cs: "vyrážka nebo svědění"
+        text: "Máte novou vyrážku nebo vás svědí kůže?"
+      - link_id: skin_new_spot
+        label_cs: "nové nebo krvácející místo na kůži"
+        text: "Objevilo se vám na kůži nové místo, které roste nebo krvácí?"
+
+  - group_id: bone
+    name_cs: "Nádory kostí"
+    icd10: ["C40-C41"]
+    items:
+      - link_id: sarc_dark_urine
+        label_cs: "tmavá nebo červená moč"
+        text: "Je vaše moč tmavá nebo červená?"
+        red_flag: true
+      - link_id: bone_sudden_pain
+        label_cs: "náhlá silná bolest kosti"
+        text: "Máte náhlou silnou bolest kosti nebo nemůžete končetinu použít?"
+        red_flag: true
+      - link_id: sarc_bone_pain
+        label_cs: "bolest kostí"
+        text: "Máte novou nebo silnější bolest kostí?"
+      - link_id: sarc_limb_swelling
+        label_cs: "otok končetiny"
+        text: "Máte otok končetiny v místě nádoru nebo operace?"
+      - link_id: ear_ringing
+        label_cs: "zhoršený sluch nebo zvonění v uších"
+        text: "Slyšíte hůř než dřív nebo vám zvoní v uších?"
+
+  - group_id: sarcoma
+    name_cs: "Sarkomy měkkých tkání a nádory nervů a pobřišnice"
+    icd10: ["C46-C49"]
+    items:
+      - link_id: sarc_dark_urine
+        label_cs: "tmavá nebo červená moč"
+        text: "Je vaše moč tmavá nebo červená?"
+        red_flag: true
+      - link_id: sarc_confusion
+        label_cs: "zmatenost nebo spavost"
+        text: "Jste zmatenější nebo spavější než obvykle? Mohou to říct i vaši blízcí."
+        red_flag: true
+      - link_id: gi_abdominal_pain
+        label_cs: "silná bolest břicha"
+        text: "Máte silnou bolest břicha, která neustupuje?"
+        red_flag: true
+      - link_id: sarc_limb_swelling
+        label_cs: "otok končetiny"
+        text: "Máte otok končetiny v místě nádoru nebo operace?"
+      - link_id: gi_tingling
+        label_cs: "brnění prstů"
+        text: "Máte brnění nebo necitlivost v prstech rukou nebo nohou?"

@@ -1,0 +1,49 @@
+{% extends "nurse/layout.html" %}
+{% set section = "unresolved" %}
+{% block title %}Nevyřešené{% endblock %}
+{% block content %}
+<h1>Nevyřešené</h1>
+<p>Hlášení a zápisy, které se nesmí ztratit. Chybějící hlášení nikdy neznamená, že pacient nemá potíže.</p>
+<h2>Hlášení ({{ reports | length }})</h2>
+{% if reports %}
+<div class="table-wrap" role="region" tabindex="0" aria-label="Neúplná, nevyhodnocená a neúspěšně zpracovaná hlášení">
+<table class="data">
+  <caption>Neúplná, nevyhodnocená a neúspěšně zpracovaná hlášení</caption>
+  <thead><tr><th scope="col">Pacient</th><th scope="col">Poslední změna</th><th scope="col">Stav</th></tr></thead>
+  <tbody>
+    {% for r in reports %}
+    <tr><th scope="row">{{ r.patient_label }} ({{ r.checkin.patient_id }})</th><td>{{ r.checkin.updated_at.strftime("%d. %m. %H:%M") }}</td><td><span aria-hidden="true">⚠ </span>{{ r.why }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}<p>Žádná nevyřešená hlášení.</p>{% endif %}
+<h2>Neúspěšné zápisy a e-maily ({{ failed | length }})</h2>
+{% if failed %}
+<div class="table-wrap" role="region" tabindex="0" aria-label="Řádky výstupní fronty ve stavu selhalo">
+<table class="data">
+  <caption>Řádky výstupní fronty ve stavu selhalo</caption>
+  <thead><tr><th scope="col">Druh</th><th scope="col">Šablona</th><th scope="col">Pokusy</th><th scope="col">Typ chyby</th><th scope="col">Vytvořeno</th></tr></thead>
+  <tbody>
+    {% for f in failed %}
+    <tr><td>{{ f.kind }}</td><td>{{ f.template }}</td><td>{{ f.item.attempts }}</td><td>{{ f.error }}</td><td>{{ f.item.created_at.strftime("%d. %m. %H:%M") }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}<p>Žádné neúspěšné zápisy.</p>{% endif %}
+<h2>Neodeslaná oznámení ({{ unnotified | length }})</h2>
+{% if unnotified %}
+<div class="table-wrap" role="region" tabindex="0" aria-label="Upozornění, o kterých se tým nedozvěděl">
+<table class="data">
+  <caption>Upozornění, o kterých se tým nedozvěděl (oznámení selhalo)</caption>
+  <thead><tr><th scope="col">Pacient</th><th scope="col">Priorita</th><th scope="col">Vytvořeno</th><th scope="col">Případ</th></tr></thead>
+  <tbody>
+    {% for a in unnotified %}
+    <tr><th scope="row">{{ a.patient_label }} ({{ a.alert.patient_id }})</th><td><span aria-hidden="true">⚠ </span>{{ "Naléhavé" if a.alert.priority == "urgent" else "Běžné" }}</td><td>{{ a.alert.created_at.strftime("%d. %m. %H:%M") }}</td><td><a href="/sestra/pripad/{{ a.alert.alert_id }}">Otevřít případ</a></td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}<p>Žádná neodeslaná oznámení.</p>{% endif %}
+{% endblock %}

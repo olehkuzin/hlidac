@@ -1,0 +1,25 @@
+# The demo monitoring plan: links the FHIR Questionnaire to its CTCAE mappings, rules and advice
+# cards (WP1). Read by src/hlidac/plans.py. No patient data.
+questionnaire: symptoms-demo-v1.json
+max_clarification_turns: 3
+mapping_ids: [ctcae-fever, ctcae-chills, ctcae-nausea, ctcae-vomiting, ctcae-diarrhoea]  # data/ctcae/mapping-demo-v1.yaml
+rule_ids: [ukons-red, ukons-two-amber, ukons-one-amber, red-flag-present, grade-needs-assessment, free-text-reported, missing-items, group-symptom-reported]  # data/plans/rules-demo-v1.yaml
+advice_card_ids: [nausea-mild]  # data/content/advice/ (WP6)
+# D54: "Mám teplotu" is not urgent by itself while the report is open; the thermometer reading is
+# asked next and decides (UKONS v3 p. 10, row 5: red from 37.5 °C or below 36.0 °C on SACT). "Nevím"
+# or a report sent without a reading keeps the reported fever red (uncertainty never lowers urgency).
+measured_by: {fever: temperature}
+# D55: a confirmed reading of 38.0 °C or more answers the fever question, so it isn't asked again.
+# 38.0 is where data/ctcae/mapping-demo-v1.yaml starts proposing CTCAE v5.0 Fever grade 1; the reading
+# then sets the UKONS rating whatever the fever answer (tests/test_measured_by.py checks every plan).
+# A lower reading doesn't answer it: fever may have come earlier.
+answered_by_reading: {fever: 38.0}
+source_ref: >-
+  Items and answer bands written by the team (no medical training) for the praha-03 demo. CTCAE
+  terms, MedDRA codes and grade criteria: NCI CTCAE v5.0 (data/ctcae/ctcae-v5.0.yaml, verbatim from
+  the official xlsx). Answer bands for vomiting episodes, stool counts, oral intake and the fever
+  thresholds: UKONS 24-Hour Triage Toolkit v3, assessment tool p. 10 (data/ctcae/ukons-v3.yaml).
+  Question structure inspired by PRO-CTCAE, but not its wording. Answer-to-grade logic:
+  data/ctcae/mapping-demo-v1.yaml.
+approved_by: null
+approval: "DEMO — čeká na schválení FN Motol"

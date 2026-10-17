@@ -1,0 +1,38 @@
+{
+  "content_id": "notifications",
+  "version": "2",
+  "approval": "DEMO — čeká na schválení FN Motol",
+  "source_ref": "Team-written workflow notices, no clinical content: architecture/feature-description.md §2 'Notifications: in app and by email' and §9 (say whether the team was notified; no symptoms, grades or names). The patient text repeats data/content/patient/results-v1.json 'team_notified'. v2 adds the fallback notice (§10, WP18) and the check-in invitation (§2 'announced in the app and by email', D28 demo panel).",
+  "templates": [
+    {
+      "template_id": "urgent-alert",
+      "kind": "urgent_alert",
+      "audience": "nurse",
+      "text": "Čeká nové naléhavé hlášení."
+    },
+    {
+      "template_id": "report-received",
+      "kind": "report_received",
+      "audience": "nurse",
+      "text": "Čeká nové hlášení k prohlédnutí."
+    },
+    {
+      "template_id": "team-notified",
+      "kind": "team_notified",
+      "audience": "patient",
+      "text": "Váš tým jsme o hlášení informovali."
+    },
+    {
+      "template_id": "alert-escalated",
+      "kind": "alert_escalated",
+      "audience": "nurse",
+      "text": "Upozornění nikdo nepřevzal v určeném čase. Jste pro něj záložní kontakt."
+    },
+    {
+      "template_id": "checkin-due",
+      "kind": "checkin_due",
+      "audience": "patient",
+      "text": "Je čas na krátké hlášení o tom, jak se cítíte."
+    }
+  ]
+}
