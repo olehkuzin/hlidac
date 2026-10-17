@@ -1,6 +1,6 @@
 # Deep dive: `praha-03` Digitální hlídač nežádoucích účinků (chosen)
 
-- **Status:** the team chose this challenge on Fri 16 Oct 2026, ~15:40. The build brief is `../CLAUDE.md`; this file holds the evidence, the medical background, the innovation plan and the pitch.
+- **Status:** the team chose this challenge on Fri 16 Oct 2026, ~15:40. The build brief is `../PRINCIPLES.md`; this file holds the evidence, the medical background, the innovation plan and the pitch.
 - **Product design moved on (Fri ~17:30):** the team's architecture is an accessible, mobile-first web app for patients with disabilities (our own secure app, Czech only; text, voice, buttons; no messenger, no images; real hospital data in IRIS; per the mentors and the team) with LLM extraction on pseudonymised text (the team's Azure OpenAI deployment in the demo, a local model by one setting; voice transcribed locally), provisional CTCAE grades confirmed by clinicians, in-app and email notifications, and deterministic rules: `../architecture/feature-description.md` and `../architecture/system-design.md`. The evidence, I1–I8 rationale and safety points here still apply; where this file describes a fixed web questionnaire, the architecture docs take precedence.
 - **Main goal:** the InterSystems prize. ePRO monitoring is established practice; sections 4 and 5 explain how context-aware triage, closed-loop follow-up and deep IRIS integration differentiate our solution.
 - **Sources:** a research pass on Fri 16 Oct (URLs in section 11). Lines marked **UNVERIFIED** rest on a snippet or weren't confirmed. **Every threshold and every piece of advice text needs sign-off from the FN Motol mentors** — nobody on the team has medical education.
@@ -70,7 +70,7 @@ Each item has a stated source or is a mechanism with rules supplied by clinician
 
 ## 5. Where InterSystems IRIS goes
 
-The current mapping of every component to IRIS is in `../architecture/system-design.md` §2–§4, and the build order is in `../architecture/roadmap.md`. Setup, sources and capability caveats are in `intersystems-toolkit.md`.
+The current mapping of every component to IRIS is in `../architecture/system-design.md` §2–§4. Setup, sources and capability caveats are in `intersystems-toolkit.md`.
 
 | Need | IRIS technology |
 |---|---|

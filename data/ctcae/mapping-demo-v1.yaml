@@ -45,12 +45,12 @@ reading_rules:
       is "at least N" with needs_clinical_assessment. "Nevím" or a missing follow-up answer gives
       the lowest grade the symptom itself supports, as "at least"; it never lowers a grade
       (principle 2).
-    source: "CLAUDE.md principle 2; architecture/feature-description.md §6"
+    source: "PRINCIPLES.md principle 2; architecture/feature-description.md §6"
   - text: >-
       OUR rule: when several proposals for one term hold, the highest grade wins; between an exact
       grade and an "at least" grade of the same number, "at least" wins (it asks for clinical
       assessment). The conditions below are written to be mutually exclusive anyway.
-    source: "CLAUDE.md principle 2"
+    source: "PRINCIPLES.md principle 2"
 
 # Condition vocabulary (WP3 implements exactly this):
 #   answer: {link_id, codes}           the item's finding is present/absent with one of these codes

@@ -156,7 +156,7 @@ _PATTERNS: list[tuple[str, re.Pattern[str]]] = [
             re.IGNORECASE,
         ),
     ),
-    # Czech birth number: 6 digits, an optional slash or dash, 3 or 4 digits (CLAUDE.md §5); or
+    # Czech birth number: 6 digits, an optional slash or dash, 3 or 4 digits (PRINCIPLES.md); or
     # grouped 2-2-2, which then needs the slash or dash, so a date like "12.10.26 1500" survives.
     (
         "[RČ]",

@@ -7,8 +7,8 @@
 | Owner (zadavatel) | Fakultní nemocnice Motol a Homolka |
 | Challenge-specific prize | None listed |
 | Brief we have | Public summary only (rakathon.cz `#rv-praha-4`). No full brief. |
-| Team status | **CHOSEN and registered** by our team, VI-KA, on Fri 16 Oct, ~15:40. Board at 15:45: 2 Prague teams on it, us and one rival. |
-| Build brief | `../CLAUDE.md` |
+| Team | VI-KA |
+| Our solution | [`../README.md`](../README.md) |
 | Deep dive | `deep-dive-praha-03.md`: evidence with sources, IRIS design, innovation, pitch |
 
 ## Brief (verbatim, Czech)

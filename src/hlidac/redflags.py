@@ -10,7 +10,7 @@ Matching ignores case and diacritics and starts at a word boundary (a phrase may
 
 Pure: no IRIS, network or clock. Only the three public functions are exported;
 none of them reads files or patient data directly — that is done by ``load_files``
-and ``raise_on_hit``. A hit can only **raise** urgency (CLAUDE.md principle 2);
+and ``raise_on_hit``. A hit can only **raise** urgency (PRINCIPLES.md principle 2);
 nothing here changes an urgent verdict to routine, nor does it lower any CTCAE grade.
 
 Every phrase comes from cited public oncology guidance, labelled DEMO — čeká na
@@ -116,7 +116,7 @@ REVIEW_RULE = "concern-phrase"
 def raise_on_hit(assessment: Assessment, text: str | None) -> Assessment:
     """Return a new assessment raised by a phrase hit; the original is unmodified.
 
-    A hit never **lowers** urgency (CLAUDE.md principle 2). An ``urgent`` phrase makes any
+    A hit never **lowers** urgency (PRINCIPLES.md principle 2). An ``urgent`` phrase makes any
     verdict ``urgent``; a ``review`` phrase makes ``no_escalation`` or
     ``insufficient_information`` a ``routine_review`` and leaves anything higher as it is."""
 

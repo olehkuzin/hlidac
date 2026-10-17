@@ -2,7 +2,7 @@
   "template_id": "alert-escalated",
   "version": "1",
   "approval": "DEMO — čeká na schválení FN Motol",
-  "source_ref": "Team-written fallback notice for the care team (architecture/feature-description.md §10); no clinical content and no patient identifiers, only a link to the nurse queue (CLAUDE.md principle 3)",
+  "source_ref": "Team-written fallback notice for the care team (architecture/feature-description.md §10); no clinical content and no patient identifiers, only a link to the nurse queue (PRINCIPLES.md principle 3)",
   "subject": "Upozornění čeká na převzetí v aplikaci Hlídač příznaků",
   "paragraphs": [
     "Dobrý den,",

@@ -2,7 +2,7 @@
   "template_id": "checkin-due",
   "version": "1",
   "approval": "DEMO — čeká na schválení FN Motol",
-  "source_ref": "Team-written invitation for the patient (architecture/feature-description.md §2: check-ins announced in the app and by email); no clinical content, only a link to the patient app (CLAUDE.md principle 3); the last sentence repeats data/content/patient/results-v1.json 'no_plan'",
+  "source_ref": "Team-written invitation for the patient (architecture/feature-description.md §2: check-ins announced in the app and by email); no clinical content, only a link to the patient app (PRINCIPLES.md principle 3); the last sentence repeats data/content/patient/results-v1.json 'no_plan'",
   "subject": "Je čas na krátké hlášení – Hlídač příznaků",
   "paragraphs": [
     "Dobrý den,",

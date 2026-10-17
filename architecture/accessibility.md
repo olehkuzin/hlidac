@@ -126,7 +126,7 @@ Each demo scenario must work for at least these people:
 5. **Contrast:** every new colour pair is checked against §3.
 6. **Persona walk-through before the demo:** scenario 1 with a screen reader, scenario 3 voice-only, scenario 2 at 200 % text size.
 
-Record each manual pass in the work package's status in `roadmap.md` (what, who, when, assistive technology used).
+Record each manual pass in the team log (what, who, when, assistive technology used).
 
 ## 8. Technical constraints to know
 

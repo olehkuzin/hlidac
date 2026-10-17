@@ -4,7 +4,7 @@
 #
 # Two levels (D56):
 # - `urgent`: only the truly critical, life-threatening statements. A hit opens the urgent screen
-#   at once and alerts the nurse; nothing waits for a question (CLAUDE.md principle 6).
+#   at once and alerts the nurse; nothing waits for a question (PRINCIPLES.md principle 6).
 # - `review`: worrying but not by itself critical. A hit makes the report at least a nurse review
 #   (never "no escalation") and the questions decide the rest; e.g. "mám horečku" waits for the
 #   thermometer (D54), whose reading still makes it urgent.

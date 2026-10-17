@@ -1,7 +1,7 @@
 # The demo assessment rules (WP4), read by src/hlidac/assessment.py. Written by the team (nobody
 # medically trained). Every rule is DEMO — čeká na schválení FN Motol. No patient data.
 # The rules only combine the UKONS ratings and CTCAE proposals of data/ctcae/mapping-demo-v1.yaml
-# with the answers; they set workflow urgency, never a diagnosis (CLAUDE.md principle 4).
+# with the answers; they set workflow urgency, never a diagnosis (PRINCIPLES.md principle 4).
 content_id: rules-demo
 version: "1"
 approval: "DEMO — čeká na schválení FN Motol"
@@ -71,7 +71,7 @@ rules:
     version: "1"
     kind: red_flag_present
     outcome: routine_review
-    source_ref: "OUR rule, needs Motol approval: a confirmed red-flag answer is never read as green, even where UKONS has no rating for it (CLAUDE.md principle 2; mapping notes on rows 5 and 7)"
+    source_ref: "OUR rule, needs Motol approval: a confirmed red-flag answer is never read as green, even where UKONS has no rating for it (PRINCIPLES.md principle 2; mapping notes on rows 5 and 7)"
     reason_cs: "Pacient uvedl varovný příznak ({items}) – posoudí sestra"
 
   - rule_id: grade-needs-assessment
@@ -85,14 +85,14 @@ rules:
     version: "1"
     kind: free_text_reported
     outcome: routine_review
-    source_ref: "OUR rule, needs Motol approval: the engine cannot grade free text, and free text may only raise urgency (CLAUDE.md principle 2)"
+    source_ref: "OUR rule, needs Motol approval: the engine cannot grade free text, and free text may only raise urgency (PRINCIPLES.md principle 2)"
     reason_cs: "Pacient popsal vlastními slovy další potíže ({items}) – přečte sestra"
 
   - rule_id: missing-items
     version: "1"
     kind: missing_items
     outcome: insufficient_information
-    source_ref: "Spec §7 'Insufficient information'; system-design §6 step 3. A missing required or red-flag item never ends as no_escalation (CLAUDE.md principle 2)"
+    source_ref: "Spec §7 'Insufficient information'; system-design §6 step 3. A missing required or red-flag item never ends as no_escalation (PRINCIPLES.md principle 2)"
     reason_cs: "Chybí odpověď na povinné nebo varovné položky ({items})"
 
   - rule_id: group-symptom-reported
@@ -100,5 +100,5 @@ rules:
     kind: group_symptom_reported
     outcome: routine_review
     review_within_hours: 24
-    source_ref: "OUR rule (D50), group approach discussed with FN Motol, DEMO: a 'yes' to an illness-group symptom that CTCAE mapping doesn't grade is never read as green; the nurse reviews it within 24 h (UKONS v3 p. 10 '1 Amber = review within 24 hours'; CLAUDE.md principle 2)"
+    source_ref: "OUR rule (D50), group approach discussed with FN Motol, DEMO: a 'yes' to an illness-group symptom that CTCAE mapping doesn't grade is never read as green; the nurse reviews it within 24 h (UKONS v3 p. 10 '1 Amber = review within 24 hours'; PRINCIPLES.md principle 2)"
     reason_cs: "Pacient uvedl příznak své skupiny onemocnění ({items}) – posoudí sestra"

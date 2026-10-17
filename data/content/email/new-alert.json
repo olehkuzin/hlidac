@@ -2,7 +2,7 @@
   "template_id": "new-alert",
   "version": "1",
   "approval": "DEMO — čeká na schválení FN Motol",
-  "source_ref": "Team-written notice for the care team; no clinical content and no patient identifiers, only a link to the nurse queue (architecture/feature-description.md §9, CLAUDE.md principle 3)",
+  "source_ref": "Team-written notice for the care team; no clinical content and no patient identifiers, only a link to the nurse queue (architecture/feature-description.md §9, PRINCIPLES.md principle 3)",
   "subject": "Nové naléhavé hlášení v aplikaci Hlídač příznaků",
   "paragraphs": [
     "Dobrý den,",

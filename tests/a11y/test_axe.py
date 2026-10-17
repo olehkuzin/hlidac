@@ -7,7 +7,7 @@ runs axe-core on every screen:
 - on patient pages also AAA contrast (7:1, 1.4.6);
 - targets ≥ 48 × 48 px, and no horizontal scrolling at 320 px width and at 200 % text.
 
-Keyboard and screen-reader passes stay manual (§7 steps 2–3); log them in roadmap.md.
+Keyboard and screen-reader passes stay manual (§7 steps 2–3); log them by hand.
 No browser installed: the test is skipped with a reason (`uv run playwright install chromium`).
 """
 

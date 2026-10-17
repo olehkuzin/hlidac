@@ -1,6 +1,6 @@
 # Feature description: Oncology Symptom Companion
 
-**This file is the top authority for the product.** Where it and `../CLAUDE.md` (or any other doc) disagree, this file wins and the other doc must be corrected; agents flag such a conflict to the team instead of choosing silently.
+**This file is the top authority for the product.** Where it and `../PRINCIPLES.md` (or any other doc) disagree, this file wins and the other doc must be corrected; agents flag such a conflict to the team instead of choosing silently.
 
 See the [workflow diagram](workflow.drawio) for the end-to-end process, [`system-design.md`](system-design.md) for how it is built on InterSystems IRIS, and [`accessibility.md`](accessibility.md) for the frontend requirements.
 
