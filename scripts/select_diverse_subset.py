@@ -10,14 +10,16 @@ most two ICD-10 codes:
 Every diagnosis gets the same share (all of its patients if it has fewer).
 Deterministic: the same dataset always gives the same subset.
 Prints aggregate counts only.
+Set RAKATHON_DATASET_DIR to the unpacked dataset folder.
 """
 
 import csv
 import json
+import os
 import pathlib
 from collections import Counter
 
-DATASET = pathlib.Path("/Users/roman/Downloads/rakathon-dataset-20261016-081440-33e1d8")
+DATASET = pathlib.Path(os.environ["RAKATHON_DATASET_DIR"])  # unpacked dataset, outside the repo
 OUT = DATASET / "fhir" / "subset-diverse.ndjson"
 
 PER_CODE = 8
