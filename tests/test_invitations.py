@@ -15,7 +15,7 @@ BASE = "https://hlidac.example.test"
 
 def team_store() -> InMemoryStore:
     store = InMemoryStore()
-    for n, email in ((1, "real.person@gmail.com"), (2, "pacient-02@demo.local")):
+    for n, email in ((1, "patient.one@example.com"), (2, "pacient-02@demo.local")):
         store.save_account(
             patient_account(account_id=f"acc-p{n}", email=email, patient_id=f"p{n}")
         )
@@ -45,13 +45,13 @@ def test_one_invitation_per_patient_and_period_email_only_to_real_addresses():
     store = team_store()
     period = datetime(2026, 10, 17, 9, 15, tzinfo=UTC)
     assert invitations.invite_team(store, "team-demo", period, T0, base_url=BASE) == 2
-    assert sent_to(store) == ["real.person@gmail.com"]  # @demo.local gets the in-app notice only
+    assert sent_to(store) == ["patient.one@example.com"]  # @demo.local gets the in-app notice only
     assert [n.kind for n in store.list_notifications("acc-p2")] == ["checkin_due"]
     invitations.invite_team(store, "team-demo", period, T0, base_url=BASE)  # a restart, a 2nd copy
-    assert sent_to(store) == ["real.person@gmail.com"]
+    assert sent_to(store) == ["patient.one@example.com"]
     assert len(store.list_notifications("acc-p1")) == 1
     invitations.invite_team(store, "team-demo", period + EVERY, T0, base_url=BASE)
-    assert sent_to(store) == ["real.person@gmail.com"] * 2
+    assert sent_to(store) == ["patient.one@example.com"] * 2
     assert len(store.list_notifications("acc-p2")) == 2
 
 
@@ -64,7 +64,7 @@ def test_the_email_carries_only_the_link_to_the_app():
 
 
 def test_undeliverable_addresses():
-    assert emails.deliverable("someone@gmail.com")
+    assert emails.deliverable("someone@example.com")
     for address in ("a@demo.local", "a@x.test", "a@example", "a@localhost", "a@b.invalid"):
         assert not emails.deliverable(address)
 
