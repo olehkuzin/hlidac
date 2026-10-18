@@ -32,9 +32,8 @@ HOST = os.environ["AZ_IRIS_HOST"]  # the IRIS server address, never in the repo
 FHIR_BASE = f"http://{HOST}:52773/fhir/r4"
 USER = "_SYSTEM"
 
-DATASET = pathlib.Path(
-    "/Users/roman/Downloads/rakathon-dataset-20261016-081440-33e1d8/fhir"
-)
+# Unpacked Rakathon dataset (outside the repo); --source overrides the default file
+DATASET = pathlib.Path(os.environ.get("RAKATHON_DATASET_DIR", ".")) / "fhir"
 SOURCE = DATASET / "bundles.ndjson"
 PRIORITY_FILES = [DATASET / "bundles-C61.ndjson", DATASET / "bundles-C64.ndjson"]
 
